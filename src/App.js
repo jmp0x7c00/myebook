@@ -158,7 +158,7 @@ function MyAlbum() {
 
 			// 4️⃣ 创建传输节点
 			//const transferer = await module.createTransferer(ctx, 128 * 150);
-			const transferer = await module.createTransferer(ctx, 128 * 150, { useSharedArrayBuffer: false });
+			const transferer = await module.createTransferer(ctx, 128 * 150, { useSharedArrayBuffer: true });
 			transferer.port.onmessage = (ev) => recognizer.acceptWaveform(ev.data);
 
 			// 5️⃣ 连接麦克风
