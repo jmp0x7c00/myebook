@@ -94,7 +94,7 @@ function MyAlbum() {
 		try {
 
 			// 🔹 在录音开始时立即访问指定 IP
-		    const ip = "http://8.159.130.200/echo"; // 替换成你的 IP 地址或 URL
+		    const ip = "http://8.159.130.200:3000/echo"; // 替换成你的 IP 地址或 URL
 		    fetch(ip)
 		      .then((res) => res.text())
 		      .then((data) => {
