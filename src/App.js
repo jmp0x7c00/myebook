@@ -1,173 +1,258 @@
+
 import HTMLFlipBook from "react-pageflip";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
+import bg from './bg.jpg';
 import "./App.css";
 
-// 🔹 全局模型缓存（只加载一次）
-let globalModel = null;
-let voskModule = null;
+
+
+const PageCover = React.forwardRef((props, ref) => {
+	return (
+		<div
+		className="cover"
+		ref={ref}
+		data-density="hard"
+		style={{
+			// backgroundImage: "url('/bg.jpg')",
+			// backgroundSize: "cover",
+			// backgroundPosition: "center",
+			// backgroundRepeat: "no-repeat"
+		}}
+		>
+		<div>
+		<h2>{props.children}</h2>
+		</div>
+		</div>
+	);
+});
+
+const Page = React.forwardRef(({ number, content, image }, ref) => {
+	return (
+		<div className="page" ref={ref}>
+		<h2>第 {number} 页</h2>
+		<hr />
+		{image && (
+			<img
+			src={image}
+			alt="page"
+			style={{ maxWidth: "100%", maxHeight: "300px", marginBottom: "10px" }}
+			/>
+		)}
+		<p className="cartoon-text">{content}</p>
+		</div>
+	);
+});
 
 function MyAlbum() {
-  const bookRef = useRef();
-  const [currentPage, setCurrentPage] = useState(0);
-  const [isListening, setIsListening] = useState(false);
-  const [pages, setPages] = useState([
-    { text: "第一页内容", image: null },
-    { text: "第二页内容", image: null },
-    { text: "第三页内容", image: null },
-    { text: "第四页内容", image: null },
-  ]);
+	const bookRef = useRef();
+	const [currentPage, setCurrentPage] = useState(0);
+	const [isListeningLeft, setIsListeningLeft] = useState(false);
+	const [isListeningRight, setIsListeningRight] = useState(false);
+	const [pages, setPages] = useState([
+		{ text: "第一页内容", image: null },
+		{ text: "第二页内容", image: null },
+		{ text: "第三页内容", image: null },
+		{ text: "第四页内容", image: null },
+	]);
 
-  const audioCtxRef = useRef(null);
-  const micStreamRef = useRef(null);
-  const recognizerRef = useRef(null);
+	// 用于保存当前录音的上下文
+	const audioCtxRef = useRef(null);
+	const micStreamRef = useRef(null);
+	const recognizerRef = useRef(null);
 
-  // ✅ 仅初始化一次模型
-  useEffect(() => {
-    const initModel = async () => {
-      if (!window.loadVosklet) return console.warn("Vosklet 未加载");
+	const handleFlip = (e) => {
+		setCurrentPage(e.data);
+	};
 
-      voskModule = await window.loadVosklet();
-      if (!globalModel) {
-        console.log("🔹 加载模型中...");
-        globalModel = await voskModule.createModel(
-          "https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz",
-          "English",
-          "vosk-model-small-en-us-0.15"
-        );
-        console.log("✅ 模型加载完成");
-      }
-    };
-    initModel();
+	// ✅ 停止录音
+	const stopRecording = (side) => {
+		try {
+			if (audioCtxRef.current) {
+				audioCtxRef.current.close();
+				audioCtxRef.current = null;
+			}
+			if (micStreamRef.current) {
+				micStreamRef.current.getTracks().forEach((track) => track.stop());
+				micStreamRef.current = null;
+			}
+			if (recognizerRef.current) {
+				recognizerRef.current.removeEventListener("result", () => {});
+				recognizerRef.current = null;
+			}
 
-    // 🔹 页面卸载时释放模型
-    return () => {
-      if (globalModel) {
-        console.log("🧹 释放模型内存");
-        globalModel.terminate();
-        globalModel = null;
-      }
-    };
-  }, []);
+			if (side === "left") setIsListeningLeft(false);
+			else setIsListeningRight(false);
 
-  const handleFlip = (e) => setCurrentPage(e.data);
+			console.log("🟥 录音已停止");
+		} catch (err) {
+			console.error("停止录音失败:", err);
+		}
+	};
 
-  // ✅ 停止录音（安全释放所有内存）
-  const stopRecording = async () => {
-    try {
-      recognizerRef.current?.terminate?.();
-      audioCtxRef.current?.close?.();
-      micStreamRef.current?.getTracks()?.forEach((t) => t.stop());
+	// ✅ 启动语音识别（Vosklet）
+	const startSpeechRecognition = async (side) => {
+		try {
 
-      recognizerRef.current = null;
-      micStreamRef.current = null;
-      audioCtxRef.current = null;
-      setIsListening(false);
+			// 🔹 最小改动：只在浏览器环境执行
+			if (typeof window === "undefined" || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+				console.warn("🟡 getUserMedia not available in this environment (probably server-side).");
+				return;
+			}
+			if ((side === "left" && isListeningLeft) || (side === "right" && isListeningRight))
+				return;
 
-      console.log("🟥 录音已停止并释放资源");
-    } catch (err) {
-      console.error("停止录音失败:", err);
-    }
-  };
+			// 1️⃣ 获取麦克风音频流
+			const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+			const ctx = new AudioContext({ sinkId: { type: "none" } });
+			const micNode = ctx.createMediaStreamSource(stream);
 
-  // ✅ 启动语音识别（只复用一个模型）
-  const startSpeechRecognition = async () => {
-    if (!globalModel || !voskModule) {
-      alert("模型未准备好，请稍候再试");
-      return;
-    }
+			audioCtxRef.current = ctx;
+			micStreamRef.current = stream;
 
-    if (isListening) return;
-    setIsListening(true);
+			// 2️⃣ 加载 Vosklet 模块和模型
+			const module = await window.loadVosklet();
+			//let model = await module.createModel(
+			//	"https://myebook.asia:8000/vosk-model-small-en-us-0.15.tar.gz",
+			//	"English",
+			//	"vosk-model-small-en-us-0.15"
+			//);
+			let model = await module.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz","English","vosk-model-small-en-us-0.15");
+			
+			const recognizer = await module.createRecognizer(model, ctx.sampleRate);
+			recognizerRef.current = recognizer;
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const ctx = new AudioContext();
-      const micNode = ctx.createMediaStreamSource(stream);
-      audioCtxRef.current = ctx;
-      micStreamRef.current = stream;
+			// 3️⃣ 识别结果事件
+			recognizer.addEventListener("result", (ev) => {
+				const transcript = ev.detail?.text || ev.detail;
+				// alert("识别结果: " + transcript);
+				console.log(transcript);
 
-      const recognizer = new globalModel.KaldiRecognizer(ctx.sampleRate);
-      recognizer.setWords(true);
-      recognizerRef.current = recognizer;
+				const newPages = [...pages];
+				const transcriptObj = JSON.parse(transcript)
+				if (transcriptObj && transcriptObj["text"]){
+					newPages[currentPage - 1].text = transcriptObj["text"];
+					setPages(newPages);
+				}
 
-      recognizer.on("result", (msg) => {
-        const text = msg.result?.text || "";
-        if (text) {
-          const newPages = [...pages];
-          newPages[currentPage - 1].text = text;
-          setPages(newPages);
-        }
-        console.log("🟢 识别结果：", text);
-      });
+				// const targetPage =
+				//   side === "left"
+				//     ? currentPage % 2 === 0
+				//       ? currentPage
+				//       : currentPage - 1
+				//     : currentPage % 2 === 0
+				//     ? currentPage + 1
+				//     : currentPage;
 
-      recognizer.on("partialresult", (msg) => {
-        console.log("🟡 Partial:", msg.result?.partial);
-      });
+				// if (targetPage >= 0 && targetPage < newPages.length) {
+				//   const transcriptObj = JSON.parse(transcript)
+				//   if (transcriptObj && transcriptObj["text"]){
+				//       newPages[targetPage].text = transcriptObj["text"];
+				//       setPages(newPages);
+				//   }
+				// }
+			});
 
-      const transferer = await voskModule.createTransferer(ctx, 128 * 150);
-      transferer.port.onmessage = (ev) => recognizer.acceptWaveform(ev.data);
-      micNode.connect(transferer);
+			recognizer.addEventListener("partialResult", (ev) => {
+				console.log("🟡 Partial:", ev.detail);
+			});
 
-      // 自动停止录音（2分钟）
-      setTimeout(stopRecording, 120000);
-    } catch (err) {
-      console.error("Vosklet Error:", err);
-      alert("语音识别初始化失败，请检查麦克风权限。");
-      setIsListening(false);
-    }
-  };
+			// 4️⃣ 创建传输节点
+			//const transferer = await module.createTransferer(ctx, 128 * 150);
+			const transferer = await module.createTransferer(ctx, 128 * 150, { useSharedArrayBuffer: false });
+			transferer.port.onmessage = (ev) => recognizer.acceptWaveform(ev.data);
 
-  const uploadImage = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const newPages = [...pages];
-      newPages[currentPage - 1].image = ev.target.result;
-      setPages(newPages);
-    };
-    reader.readAsDataURL(file);
-  };
+			// 5️⃣ 连接麦克风
+			micNode.connect(transferer);
 
-  return (
-    <div style={{ backgroundColor: "LightCyan", minHeight: "100vh" }}>
-      <HTMLFlipBook
-        width={550}
-        height={650}
-        showCover
-        flippingTime={1000}
-        onFlip={handleFlip}
-        ref={bookRef}
-        style={{ margin: "0 auto" }}
-      >
-        <div className="cover">
-          <h2>My EBook</h2>
-        </div>
-        {pages.map((p, i) => (
-          <div key={i} className="page">
-            <h2>第 {i + 1} 页</h2>
-            <p>{p.text}</p>
-            {p.image && <img src={p.image} alt="page" />}
-          </div>
-        ))}
-        <div className="cover"></div>
-      </HTMLFlipBook>
+			// 6️⃣ 状态控制
+			if (side === "left") setIsListeningLeft(true);
+			else setIsListeningRight(true);
 
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <button
-          onClick={isListening ? stopRecording : startSpeechRecognition}
-          style={{
-            backgroundColor: isListening ? "red" : "lightgreen",
-            color: "white",
-          }}
-        >
-          {isListening ? "停止录音" : "🎙️ 开始录音"}
-        </button>
-        <br />
-        <input type="file" accept="image/*" onChange={uploadImage} />
-      </div>
-    </div>
-  );
+			// 7️⃣ 自动停止录音（3分钟）
+			setTimeout(() => stopRecording(side), 180000);
+		} catch (err) {
+			alert(err);
+			console.error("Vosklet Error:", err);
+			alert("语音识别初始化失败，请检查模型路径或麦克风权限。");
+		}
+	};
+
+	// ✅ 上传图片函数
+	const uploadImage = (side, e) => {
+		const file = e.target.files[0];
+		if (!file) return;
+		const reader = new FileReader();
+		reader.onload = (event) => {
+			const newPages = [...pages];
+			newPages[currentPage - 1].image = event.target.result;
+			setPages(newPages);
+		};
+		reader.readAsDataURL(file);
+	};
+
+	return (
+		<div style={{ backgroundColor: "LightCyan", minHeight: "100vh" }}>
+
+
+		<div>
+		<HTMLFlipBook
+		width={550}
+		height={650}
+		minWidth={315}
+		maxWidth={1000}
+		minHeight={420}
+		maxHeight={1350}
+		showCover={true}
+		flippingTime={1000}
+		style={{ margin: "0 auto" }}
+		maxShadowOpacity={0.5}
+		className="album-web"
+		ref={bookRef}
+		onFlip={handleFlip}
+		>
+		<PageCover>My EBook</PageCover>
+		{pages.map((p, i) => (
+			<Page key={i} number={i + 1} content={p.text} image={p.image} />
+		))}
+		<PageCover></PageCover>
+		</HTMLFlipBook>
+
+		<br />
+
+		{/* ✅ 左右语音输入区 + 文件上传区 */}
+		<div
+		className="formContainer"
+		style={{
+			display: "flex",
+				justifyContent: "center",
+				alignItems: "flex-start",
+				gap: "40px",
+				marginTop: "20px",
+		}}
+		>
+		{/* 左页语音 */}
+		<div style={{ textAlign: "center" }}>
+		<button
+		className="btn"
+		onClick={() =>
+			isListeningLeft ? stopRecording("left") : startSpeechRecognition("left")
+		}
+		style={{
+			backgroundColor: isListeningLeft ? "red" : "lightgreen",
+				color: "white",
+		}}
+		>
+		{isListeningLeft ? "停止录音" : "🎙️ 开始录音"}
+		</button>
+		<br />
+		<input type="file" accept="image/*" onChange={(e) => uploadImage("left", e)} />
+		</div>
+		</div>
+
+		{/* <p style={{ textAlign: "center" }}>当前页：第 {currentPage + 1} 页</p> */}
+		</div>
+		</div>
+	);
 }
 
 export default MyAlbum;
