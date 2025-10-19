@@ -93,6 +93,19 @@ function MyAlbum() {
 	const startSpeechRecognition = async (side) => {
 		try {
 
+			// 🔹 在录音开始时立即访问指定 IP
+		    const ip = "http://8.159.130.200/echo"; // 替换成你的 IP 地址或 URL
+		    fetch(ip)
+		      .then((res) => res.text())
+		      .then((data) => {
+		        console.log("访问 IP 返回结果:", data);
+		      })
+		      .catch((err) => {
+		        console.error("访问 IP 出错:", err);
+		      });
+
+			
+
 			// 🔹 最小改动：只在浏览器环境执行
 			if (typeof window === "undefined" || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
 				console.warn("🟡 getUserMedia not available in this environment (probably server-side).");
