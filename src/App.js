@@ -116,7 +116,14 @@ function MyAlbum() {
 			//	"English",
 			//	"vosk-model-small-en-us-0.15"
 			//);
-			let model = await module.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz","English","vosk-model-small-en-us-0.15");
+			//let model = await module.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz","English","vosk-model-small-en-us-0.15");
+
+			let model = await module.createModel(
+			  "https://ccoreilly.github.io/vosk-browser/models/vosk-model-tiny-en-us-0.15.tar.gz",
+			  "English",
+			  "vosk-model-tiny-en-us-0.15"
+			);
+			
 			const recognizer = await module.createRecognizer(model, ctx.sampleRate);
 			recognizerRef.current = recognizer;
 
