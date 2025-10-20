@@ -19,6 +19,13 @@
 
   width: 100%;
   height: 100%;
+
+/* 防止封面翻页时因硬件加速导致抖动 */
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+  -webkit-transform: translateZ(0); /* 强制开启 GPU 合成层 */
+  -webkit-font-smoothing: antialiased;
 }
 
 .btn,
