@@ -38,7 +38,7 @@ const Page = React.forwardRef(({ number, content, image }, ref) => {
 			style={{ maxWidth: "100%", maxHeight: "300px", marginBottom: "10px" }}
 			/>
 		)}
-		<p className="cartoon-text">{content}</p>
+		<p className="cartoon-text" style={{ whiteSpace: "pre-wrap" }}>{content}</p>
 		</div>
 	);
 });
@@ -127,9 +127,16 @@ function MyAlbum() {
 		    recognizer.on("result", (message) => {
 		        console.log(`Result: ${message.result.text}`);
 				const newPages = [...pages];
-				newPages[currentPage - 1].text = `${message.result.text}`;
-				setPages(newPages);
-				
+				const textOld = newPages[currentPage - 1].text;
+				if (!textOld || textOld === "" || textOld.includes('内容')){
+					textOld = '';
+				} 
+				const textNew = `${message.result.text}`;
+				if (textNew !== ''){
+					textNew = textOld + '\n' + textNew;
+					newPages[currentPage - 1].text = textNew;
+					setPages(newPages);
+				}
 		    });
 		    recognizer.on("partialresult", (message) => {
 		        console.log(`Partial result: ${message.result.partial}`);
