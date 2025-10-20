@@ -127,11 +127,11 @@ function MyAlbum() {
 		    recognizer.on("result", (message) => {
 		        console.log(`Result: ${message.result.text}`);
 				const newPages = [...pages];
-				const textOld = newPages[currentPage - 1].text;
+				let textOld = newPages[currentPage - 1].text;
 				if (!textOld || textOld === "" || textOld.includes('内容')){
 					textOld = '';
 				} 
-				const textNew = `${message.result.text}`;
+				let textNew = `${message.result.text}`;
 				if (textNew !== ''){
 					textNew = textOld + '\n' + textNew;
 					newPages[currentPage - 1].text = textNew;
