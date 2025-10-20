@@ -212,7 +212,6 @@ function MyAlbum() {
 		<div
 		  style={{
 		    backgroundColor: "LightCyan",
-		    minHeight: "100dvh",
 		    overflow: "hidden",
 		    touchAction: "none",
 		  }}
