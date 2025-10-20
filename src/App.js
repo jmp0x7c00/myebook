@@ -151,6 +151,18 @@ function MyAlbum() {
 	
 	        source.connect(processor);
 	        processor.connect(audioContext.destination);
+
+
+			// ✅ 保存上下文
+	        audioCtxRef.current = audioContext;
+	        micStreamRef.current = mediaStream;
+	        recognizerRef.current = recognizer;
+	
+	        // ✅ 更新按钮状态
+	        if (side === "left") setIsListeningLeft(true);
+	        else setIsListeningRight(true);
+	
+	        console.log("🟩 录音已开始");
 					
 		} catch (err) {
 			alert(err);
