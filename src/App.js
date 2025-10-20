@@ -118,7 +118,7 @@ function MyAlbum() {
 			//);
 			//let model = await module.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz","English","vosk-model-small-en-us-0.15");
 
-			const model = await Vosk.createModel(https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz);
+			const model = await Vosk.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz");
 			const recognizer = new model.KaldiRecognizer();
 		    recognizer.on("result", (message) => {
 		        console.log(`Result: ${message.result.text}`);
