@@ -133,11 +133,14 @@ function MyAlbum() {
 			recognizer.setWords(true);
 		    recognizer.on("result", (message) => {
 		        console.log(`Result: ${message.result.text}`);
-				alert(`Result: ${message.result.text}`);
+				const newPages = [...pages];
+				newPages[currentPage - 1].text = `${message.result.text}`;
+				setPages(newPages);
+				
 		    });
 		    recognizer.on("partialresult", (message) => {
 		        console.log(`Partial result: ${message.result.partial}`);
-				alert(`Partial result: ${message.result.partial}`);
+				
 		    });				
 
 			 const mediaStream = await navigator.mediaDevices.getUserMedia({
