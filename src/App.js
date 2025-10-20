@@ -209,7 +209,14 @@ function MyAlbum() {
 	};
 
 	return (
-		<div style={{ backgroundColor: "LightCyan", minHeight: "100vh" }}>
+		<div
+		  style={{
+		    backgroundColor: "LightCyan",
+		    minHeight: "100dvh",
+		    overflow: "hidden",
+		    touchAction: "none",
+		  }}
+		>
 
 
 		<div>
