@@ -237,33 +237,36 @@ function MyAlbum() {
 		<br />
 
 		{/* ✅ 左右语音输入区 + 文件上传区 */}
-		<div
-		className="formContainer"
-		style={{
-			display: "flex",
-				justifyContent: "center",
-				alignItems: "flex-start",
-				gap: "40px",
-				marginTop: "20px",
-		}}
-		>
-		{/* 左页语音 */}
-		<div style={{ textAlign: "center" }}>
-		<button
-		className="btn"
-		onClick={() =>
-			isListeningLeft ? stopRecording("left") : startSpeechRecognition("left")
-		}
-		style={{
-			backgroundColor: isListeningLeft ? "red" : "lightgreen",
+		<div className="formContainer" style={{ display: "flex" , justifyContent: "center" , alignItems: "center" ,
+			gap: "20px" , marginTop: "20px" , }}>
+			{/* 上传按钮（自定义美观） */}
+			<button className="btn" style={{ backgroundColor: "#3498db" , color: "white" , border: "none" ,
+				padding: "8px 16px" , borderRadius: "6px" , cursor: "pointer" , }} onClick={()=>
+				document.getElementById("fileInputLeft").click()}
+				>
+				上传图片
+			</button>
+
+			{/* 隐藏原生 input */}
+			<input id="fileInputLeft" type="file" accept="image/*" style={{ display: "none" }} onChange={(e)=>
+			uploadImage("left", e)}
+			/>
+
+			{/* 录音按钮 */}
+			<button className="btn" onClick={()=>
+				isListeningLeft ? stopRecording("left") : startSpeechRecognition("left")
+				}
+				style={{
+				backgroundColor: isListeningLeft ? "red" : "lightgreen",
 				color: "white",
-		}}
-		>
-		{isListeningLeft ? "停止录音" : "🎙️ 开始录音"}
-		</button>
-		<br />
-		<input type="file" accept="image/*" onChange={(e) => uploadImage("left", e)} />
-		</div>
+				border: "none",
+				padding: "8px 16px",
+				borderRadius: "6px",
+				cursor: "pointer",
+				}}
+				>
+				{isListeningLeft ? "停止录音" : "🎙️ 开始录音"}
+			</button>
 		</div>
 
 		{/* <p style={{ textAlign: "center" }}>当前页：第 {currentPage + 1} 页</p> */}
