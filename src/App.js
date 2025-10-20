@@ -43,6 +43,16 @@ const Page = React.forwardRef(({ number, content, image }, ref) => {
 	);
 });
 
+
+function floatTo16BitPCM(float32Array) {
+    const buffer = new Int16Array(float32Array.length);
+    for (let i = 0; i < float32Array.length; i++) {
+        let s = Math.max(-1, Math.min(1, float32Array[i]));
+        buffer[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    }
+    return buffer;
+}
+
 function MyAlbum() {
 	const bookRef = useRef();
 	const [currentPage, setCurrentPage] = useState(0);
@@ -139,16 +149,21 @@ function MyAlbum() {
 		    });
 		    
 		    const audioContext = new AudioContext();
-		    const recognizerNode = audioContext.createScriptProcessor(4096, 1, 1)
-		    recognizerNode.onaudioprocess = (event) => {
-		        try {
-		            recognizer.acceptWaveform(event.inputBuffer)
-		        } catch (error) {
-		            console.error('acceptWaveform failed', error)
-		        }
-		    }
-		    const source = audioContext.createMediaStreamSource(mediaStream);
-		    source.connect(recognizerNode);
+
+			 await audioContext.resume();
+			
+		    
+	        const source = audioContext.createMediaStreamSource(mediaStream);
+	        const processor = audioContext.createScriptProcessor(4096, 1, 1);
+	
+	        processor.onaudioprocess = (event) => {
+	            const input = event.inputBuffer.getChannelData(0); // ✅ 只取单声道 Float32Array
+	            const int16Buffer = floatTo16BitPCM(input);       // 转成 Int16
+	            recognizer.acceptWaveform(int16Buffer);
+	        };
+	
+	        source.connect(processor);
+	        processor.connect(audioContext.destination);
 					
 			
 			// const recognizer = await module.createRecognizer(model, ctx.sampleRate);
