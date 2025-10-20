@@ -102,12 +102,12 @@ function MyAlbum() {
 				return;
 
 			// 1️⃣ 获取麦克风音频流
-			const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-			const ctx = new AudioContext({ sinkId: { type: "none" } });
-			const micNode = ctx.createMediaStreamSource(stream);
+			// const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+			// const ctx = new AudioContext({ sinkId: { type: "none" } });
+			// const micNode = ctx.createMediaStreamSource(stream);
 
-			audioCtxRef.current = ctx;
-			micStreamRef.current = stream;
+			// audioCtxRef.current = ctx;
+			// micStreamRef.current = stream;
 
 			// 2️⃣ 加载 Vosklet 模块和模型
 			//const module = await window.loadVosklet();
