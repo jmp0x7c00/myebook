@@ -122,7 +122,7 @@ function MyAlbum() {
 	            setIsModelLoading(false);
 	            console.log("✅ 模型加载完成");
         	}
-			const recognizer = new model.KaldiRecognizer(48000);
+			const recognizer = new modelRef.current.KaldiRecognizer(48000);
 			recognizer.setWords(true);
 		    recognizer.on("result", (message) => {
 		        console.log(`Result: ${message.result.text}`);
