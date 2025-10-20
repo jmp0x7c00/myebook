@@ -120,6 +120,7 @@ function MyAlbum() {
 
 			const model = await Vosk.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz");
 			const recognizer = new model.KaldiRecognizer(48000);
+			recognizer.setWords(true);
 		    recognizer.on("result", (message) => {
 		        console.log(`Result: ${message.result.text}`);
 		    });
