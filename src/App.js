@@ -110,66 +110,98 @@ function MyAlbum() {
 			micStreamRef.current = stream;
 
 			// 2️⃣ 加载 Vosklet 模块和模型
-			const module = await window.loadVosklet();
+			//const module = await window.loadVosklet();
 			//let model = await module.createModel(
 			//	"https://myebook.asia:8000/vosk-model-small-en-us-0.15.tar.gz",
 			//	"English",
 			//	"vosk-model-small-en-us-0.15"
 			//);
-			let model = await module.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz","English","vosk-model-small-en-us-0.15");
+			//let model = await module.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz","English","vosk-model-small-en-us-0.15");
+
+			const model = await Vosk.createModel(https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz);
+			const recognizer = new model.KaldiRecognizer();
+		    recognizer.on("result", (message) => {
+		        console.log(`Result: ${message.result.text}`);
+		    });
+		    recognizer.on("partialresult", (message) => {
+		        console.log(`Partial result: ${message.result.partial}`);
+		    });				
+
+			 const mediaStream = await navigator.mediaDevices.getUserMedia({
+		        video: false,
+		        audio: {
+		            echoCancellation: true,
+		            noiseSuppression: true,
+		            channelCount: 1,
+		            sampleRate: 16000
+		        },
+		    });
+		    
+		    const audioContext = new AudioContext();
+		    const recognizerNode = audioContext.createScriptProcessor(4096, 1, 1)
+		    recognizerNode.onaudioprocess = (event) => {
+		        try {
+		            recognizer.acceptWaveform(event.inputBuffer)
+		        } catch (error) {
+		            console.error('acceptWaveform failed', error)
+		        }
+		    }
+		    const source = audioContext.createMediaStreamSource(mediaStream);
+		    source.connect(recognizerNode);
+					
 			
-			const recognizer = await module.createRecognizer(model, ctx.sampleRate);
-			recognizerRef.current = recognizer;
+			// const recognizer = await module.createRecognizer(model, ctx.sampleRate);
+			// recognizerRef.current = recognizer;
 
 			// 3️⃣ 识别结果事件
-			recognizer.addEventListener("result", (ev) => {
-				const transcript = ev.detail?.text || ev.detail;
-				// alert("识别结果: " + transcript);
-				console.log(transcript);
+			// recognizer.addEventListener("result", (ev) => {
+			// 	const transcript = ev.detail?.text || ev.detail;
+			// 	// alert("识别结果: " + transcript);
+			// 	console.log(transcript);
 
-				const newPages = [...pages];
-				const transcriptObj = JSON.parse(transcript)
-				if (transcriptObj && transcriptObj["text"]){
-					newPages[currentPage - 1].text = transcriptObj["text"];
-					setPages(newPages);
-				}
+			// 	const newPages = [...pages];
+			// 	const transcriptObj = JSON.parse(transcript)
+			// 	if (transcriptObj && transcriptObj["text"]){
+			// 		newPages[currentPage - 1].text = transcriptObj["text"];
+			// 		setPages(newPages);
+			// 	}
 
-				// const targetPage =
-				//   side === "left"
-				//     ? currentPage % 2 === 0
-				//       ? currentPage
-				//       : currentPage - 1
-				//     : currentPage % 2 === 0
-				//     ? currentPage + 1
-				//     : currentPage;
+			// 	// const targetPage =
+			// 	//   side === "left"
+			// 	//     ? currentPage % 2 === 0
+			// 	//       ? currentPage
+			// 	//       : currentPage - 1
+			// 	//     : currentPage % 2 === 0
+			// 	//     ? currentPage + 1
+			// 	//     : currentPage;
 
-				// if (targetPage >= 0 && targetPage < newPages.length) {
-				//   const transcriptObj = JSON.parse(transcript)
-				//   if (transcriptObj && transcriptObj["text"]){
-				//       newPages[targetPage].text = transcriptObj["text"];
-				//       setPages(newPages);
-				//   }
-				// }
-			});
+			// 	// if (targetPage >= 0 && targetPage < newPages.length) {
+			// 	//   const transcriptObj = JSON.parse(transcript)
+			// 	//   if (transcriptObj && transcriptObj["text"]){
+			// 	//       newPages[targetPage].text = transcriptObj["text"];
+			// 	//       setPages(newPages);
+			// 	//   }
+			// 	// }
+			// });
 
-			recognizer.addEventListener("partialResult", (ev) => {
-				console.log("🟡 Partial:", ev.detail);
-			});
+			// recognizer.addEventListener("partialResult", (ev) => {
+			// 	console.log("🟡 Partial:", ev.detail);
+			// });
 
-			// 4️⃣ 创建传输节点
-			//const transferer = await module.createTransferer(ctx, 128 * 150);
-			const transferer = await module.createTransferer(ctx, 128 * 150, { useSharedArrayBuffer: true });
-			transferer.port.onmessage = (ev) => recognizer.acceptWaveform(ev.data);
+			// // 4️⃣ 创建传输节点
+			// //const transferer = await module.createTransferer(ctx, 128 * 150);
+			// const transferer = await module.createTransferer(ctx, 128 * 150, { useSharedArrayBuffer: true });
+			// transferer.port.onmessage = (ev) => recognizer.acceptWaveform(ev.data);
 
-			// 5️⃣ 连接麦克风
-			micNode.connect(transferer);
+			// // 5️⃣ 连接麦克风
+			// micNode.connect(transferer);
 
-			// 6️⃣ 状态控制
-			if (side === "left") setIsListeningLeft(true);
-			else setIsListeningRight(true);
+			// // 6️⃣ 状态控制
+			// if (side === "left") setIsListeningLeft(true);
+			// else setIsListeningRight(true);
 
-			// 7️⃣ 自动停止录音（3分钟）
-			setTimeout(() => stopRecording(side), 180000);
+			// // 7️⃣ 自动停止录音（3分钟）
+			// setTimeout(() => stopRecording(side), 180000);
 		} catch (err) {
 			alert(err);
 			console.error("Vosklet Error:", err);
