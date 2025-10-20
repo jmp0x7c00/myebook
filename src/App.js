@@ -138,6 +138,7 @@ function MyAlbum() {
 				if (textNew !== '. '){
 					if (textOld.endsWith(textNew)){
 						console.log(`重复内容： ${textNew}, 过滤掉`);
+						return;
 					}
 					textNew = textOld + textNew;
 					newPages[currentPage - 1].text = textNew;
@@ -237,6 +238,7 @@ function MyAlbum() {
 		<br />
 
 		{/* ✅ 左右语音输入区 + 文件上传区 */}
+		{currentPage > 0 && (
 		<div className="formContainer" style={{ display: "flex" , justifyContent: "center" , alignItems: "center" ,
 			gap: "20px" , marginTop: "20px" , }}>
 			{/* 上传按钮（自定义美观） */}
@@ -268,6 +270,7 @@ function MyAlbum() {
 				{isListeningLeft ? "停止录音" : "🎙️ 开始录音"}
 			</button>
 		</div>
+		)}
 
 		{/* <p style={{ textAlign: "center" }}>当前页：第 {currentPage + 1} 页</p> */}
 		</div>
