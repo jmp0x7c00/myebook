@@ -129,7 +129,7 @@ function MyAlbum() {
 				const newPages = [...pages];
 				let textOld = '';
 				if (newPages[currentPage - 1] && newPages[currentPage - 1] .text){
-					let textOld = newPages[currentPage - 1].text;
+					textOld = newPages[currentPage - 1].text;
 					if (!textOld || textOld === "" || textOld.includes('内容')){
 						textOld = '';
 					} 
