@@ -1,4 +1,4 @@
-
+/* global Vosk */
 import HTMLFlipBook from "react-pageflip";
 import React, { useState, useRef } from "react";
 import bg from './bg.jpg';
