@@ -111,23 +111,6 @@ function MyAlbum() {
 			if ((side === "left" && isListeningLeft) || (side === "right" && isListeningRight))
 				return;
 
-			// 1️⃣ 获取麦克风音频流
-			// const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-			// const ctx = new AudioContext({ sinkId: { type: "none" } });
-			// const micNode = ctx.createMediaStreamSource(stream);
-
-			// audioCtxRef.current = ctx;
-			// micStreamRef.current = stream;
-
-			// 2️⃣ 加载 Vosklet 模块和模型
-			//const module = await window.loadVosklet();
-			//let model = await module.createModel(
-			//	"https://myebook.asia:8000/vosk-model-small-en-us-0.15.tar.gz",
-			//	"English",
-			//	"vosk-model-small-en-us-0.15"
-			//);
-			//let model = await module.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz","English","vosk-model-small-en-us-0.15");
-
 			const model = await Vosk.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz");
 			const recognizer = new model.KaldiRecognizer(48000);
 			recognizer.setWords(true);
@@ -169,59 +152,6 @@ function MyAlbum() {
 	        source.connect(processor);
 	        processor.connect(audioContext.destination);
 					
-			
-			// const recognizer = await module.createRecognizer(model, ctx.sampleRate);
-			// recognizerRef.current = recognizer;
-
-			// 3️⃣ 识别结果事件
-			// recognizer.addEventListener("result", (ev) => {
-			// 	const transcript = ev.detail?.text || ev.detail;
-			// 	// alert("识别结果: " + transcript);
-			// 	console.log(transcript);
-
-			// 	const newPages = [...pages];
-			// 	const transcriptObj = JSON.parse(transcript)
-			// 	if (transcriptObj && transcriptObj["text"]){
-			// 		newPages[currentPage - 1].text = transcriptObj["text"];
-			// 		setPages(newPages);
-			// 	}
-
-			// 	// const targetPage =
-			// 	//   side === "left"
-			// 	//     ? currentPage % 2 === 0
-			// 	//       ? currentPage
-			// 	//       : currentPage - 1
-			// 	//     : currentPage % 2 === 0
-			// 	//     ? currentPage + 1
-			// 	//     : currentPage;
-
-			// 	// if (targetPage >= 0 && targetPage < newPages.length) {
-			// 	//   const transcriptObj = JSON.parse(transcript)
-			// 	//   if (transcriptObj && transcriptObj["text"]){
-			// 	//       newPages[targetPage].text = transcriptObj["text"];
-			// 	//       setPages(newPages);
-			// 	//   }
-			// 	// }
-			// });
-
-			// recognizer.addEventListener("partialResult", (ev) => {
-			// 	console.log("🟡 Partial:", ev.detail);
-			// });
-
-			// // 4️⃣ 创建传输节点
-			// //const transferer = await module.createTransferer(ctx, 128 * 150);
-			// const transferer = await module.createTransferer(ctx, 128 * 150, { useSharedArrayBuffer: true });
-			// transferer.port.onmessage = (ev) => recognizer.acceptWaveform(ev.data);
-
-			// // 5️⃣ 连接麦克风
-			// micNode.connect(transferer);
-
-			// // 6️⃣ 状态控制
-			// if (side === "left") setIsListeningLeft(true);
-			// else setIsListeningRight(true);
-
-			// // 7️⃣ 自动停止录音（3分钟）
-			// setTimeout(() => stopRecording(side), 180000);
 		} catch (err) {
 			alert(err);
 			console.error("Vosklet Error:", err);
