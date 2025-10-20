@@ -134,9 +134,12 @@ function MyAlbum() {
 						textOld = '';
 					} 
 				}
-				let textNew = `${message.result.text}`;
-				if (textNew !== ''){
-					textNew = textOld + '. ' + textNew;
+				let textNew = `${message.result.text}. `;
+				if (textNew !== '. '){
+					if (textOld.endsWith(textNew)){
+						console.log(`重复内容： ${textNew}, 过滤掉`);
+					}
+					textNew = textOld + textNew;
 					newPages[currentPage - 1].text = textNew;
 					setPages(newPages);
 				}
