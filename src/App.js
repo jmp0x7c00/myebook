@@ -58,6 +58,8 @@ function MyAlbum() {
 	const [currentPage, setCurrentPage] = useState(0);
 	const [isListeningLeft, setIsListeningLeft] = useState(false);
 	const [isListeningRight, setIsListeningRight] = useState(false);
+	const [isModelLoading, setIsModelLoading] = useState(false);
+	
 	const [pages, setPages] = useState([
 		{ text: "第一页内容", image: null },
 		{ text: "第二页内容", image: null },
@@ -103,15 +105,19 @@ function MyAlbum() {
 	const startSpeechRecognition = async (side) => {
 		try {
 
-			// 🔹 最小改动：只在浏览器环境执行
-			if (typeof window === "undefined" || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-				console.warn("🟡 getUserMedia not available in this environment (probably server-side).");
+			// 如果模型正在加载
+			if (isModelLoading) {
+				alert("模型加载中，请稍后...");
 				return;
 			}
-			if ((side === "left" && isListeningLeft) || (side === "right" && isListeningRight))
-				return;
-
-			const model = await Vosk.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz");
+		
+		    if ((side === "left" && isListeningLeft) || (side === "right" && isListeningRight)) return;
+		
+		    setIsModelLoading(true); // 开始加载模型
+	
+		    const model = await Vosk.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz");
+		
+		    setIsModelLoading(false); // 模型加载完成
 			const recognizer = new model.KaldiRecognizer(48000);
 			recognizer.setWords(true);
 		    recognizer.on("result", (message) => {
