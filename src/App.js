@@ -157,9 +157,8 @@ function MyAlbum() {
 	        const processor = audioContext.createScriptProcessor(4096, 1, 1);
 	
 	        processor.onaudioprocess = (event) => {
-	            const input = event.inputBuffer.getChannelData(0); // ✅ 只取单声道 Float32Array
-	            const int16Buffer = floatTo16BitPCM(input);       // 转成 Int16
-	            recognizer.acceptWaveform(int16Buffer);
+	            const audioBuffer = event.inputBuffer; // ✅ 保留 AudioBuffer
+    			recognizer.acceptWaveform(audioBuffer); // Vosk 正确类型
 	        };
 	
 	        source.connect(processor);
