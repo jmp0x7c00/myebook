@@ -119,7 +119,7 @@ function MyAlbum() {
 			//let model = await module.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz","English","vosk-model-small-en-us-0.15");
 
 			const model = await Vosk.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz");
-			const recognizer = new model.KaldiRecognizer();
+			const recognizer = new model.KaldiRecognizer(48000);
 		    recognizer.on("result", (message) => {
 		        console.log(`Result: ${message.result.text}`);
 		    });
