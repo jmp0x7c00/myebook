@@ -59,6 +59,7 @@ function MyAlbum() {
 	const [isListeningLeft, setIsListeningLeft] = useState(false);
 	const [isListeningRight, setIsListeningRight] = useState(false);
 	const [isModelLoading, setIsModelLoading] = useState(false);
+	const modelRef = useRef(null);  // 🔹 保存全局模型
 	
 	const [pages, setPages] = useState([
 		{ text: "第一页内容", image: null },
@@ -113,11 +114,14 @@ function MyAlbum() {
 		
 		    if ((side === "left" && isListeningLeft) || (side === "right" && isListeningRight)) return;
 		
-		    setIsModelLoading(true); // 开始加载模型
-	
-		    const model = await Vosk.createModel("https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz");
-		
-		    setIsModelLoading(false); // 模型加载完成
+		    if (!modelRef.current) {
+	            setIsModelLoading(true);
+	            modelRef.current = await Vosk.createModel(
+	                "https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz"
+	            );
+	            setIsModelLoading(false);
+	            console.log("✅ 模型加载完成");
+        	}
 			const recognizer = new model.KaldiRecognizer(48000);
 			recognizer.setWords(true);
 		    recognizer.on("result", (message) => {
