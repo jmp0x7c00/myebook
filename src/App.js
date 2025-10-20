@@ -136,7 +136,7 @@ function MyAlbum() {
 				}
 				let textNew = `${message.result.text}`;
 				if (textNew !== ''){
-					textNew = textOld + '\n' + textNew;
+					textNew = textOld + '. ' + textNew;
 					newPages[currentPage - 1].text = textNew;
 					setPages(newPages);
 				}
