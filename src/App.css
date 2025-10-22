@@ -86,7 +86,13 @@ input {
 
 
 .cover h2 {
-  font-family: 'Fredoka One', cursive;
+  font-family:
+    "Comic Sans MS",         /* Windows、部分安卓 */
+    "Chalkboard SE",         /* iPad / macOS */
+    "Sniglet",               /* 一些安卓内置圆润字体 */
+    "Baloo 2",
+    "Nunito",
+    sans-serif;       
   font-size: 3rem; /* 根据需要调整大小 */
   color: #333;      /* 字体颜色 */
 }
