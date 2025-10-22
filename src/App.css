@@ -64,15 +64,23 @@ input {
   justify-content: center;
 }
 
-/* 卡通风格文字样式 */
 .cartoon-text {
-  font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive;
+  font-family:
+    "Comic Sans MS",         /* Windows、部分安卓 */
+    "Chalkboard SE",         /* iPad / macOS */
+    "Sniglet",               /* 一些安卓内置圆润字体 */
+    "Baloo 2",
+    "Nunito",
+    sans-serif;              /* 最后兜底 */
   font-size: 22px;
-  color: #ff66b2;
+  color: #000; /* 黑色字体 */
   text-shadow: 2px 2px 0 #fff, 3px 3px 0 #ffccff;
   letter-spacing: 1px;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
 
 .cover h2 {
   font-family: 'Fredoka One', cursive;
