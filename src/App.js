@@ -219,7 +219,6 @@ function MyAlbum() {
 		  style={{
 		    backgroundColor: "LightCyan",
 		    overflow: "hidden",
-		    touchAction: "none",
 		  }}
 		>
 
