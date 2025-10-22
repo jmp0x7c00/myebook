@@ -239,7 +239,7 @@ function MyAlbum() {
 		ref={bookRef}
 		onFlip={handleFlip}
 		>
-		<PageCover></PageCover>
+		<PageCover>I am special!</PageCover>
 		{pages.map((p, i) => (
 			<Page key={i} number={i + 1} content={p.text} image={p.image} />
 		))}
