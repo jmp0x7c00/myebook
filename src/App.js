@@ -134,7 +134,13 @@ function MyAlbum() {
 						textOld = '';
 					} 
 				}
-				let textNew = `${message.result.text}. `;
+		
+				let raw = message.result.text.trim();
+				if (raw.length > 0) {
+				  raw = raw.charAt(0).toUpperCase() + raw.slice(1);
+				}
+				let textNew = `${raw}. `;
+				
 				if (textNew !== '. '){
 					if (textOld.endsWith(textNew)){
 						console.log(`重复内容： ${textNew}, 过滤掉`);
