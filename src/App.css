@@ -13,7 +13,7 @@
 .cover {
   /* background-color: rgb(251, 225, 139); */
   /* box-shadow: 0 1.5em 3em -1em rgb(70, 69, 69); */
-  background-image: url('bg.jpg'); /* 注意路径相对于 public 文件夹 */
+  background-image: url('179175e8b0f611660ec7f67422b3ce71.jpeg'); /* 注意路径相对于 public 文件夹 */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
