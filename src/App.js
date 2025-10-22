@@ -1,7 +1,7 @@
 /* global Vosk */
 import HTMLFlipBook from "react-pageflip";
 import React, { useState, useRef } from "react";
-import bg from './bg.jpg';
+import bg from './src/179175e8b0f611660ec7f67422b3ce71.jpeg';
 import "./App.css";
 
 
@@ -13,7 +13,7 @@ const PageCover = React.forwardRef((props, ref) => {
 		ref={ref}
 		data-density="hard"
 		style={{
-			// backgroundImage: "url('/bg.jpg')",
+			// backgroundImage: "url('/src/179175e8b0f611660ec7f67422b3ce71.jpeg')",
 			// backgroundSize: "cover",
 			// backgroundPosition: "center",
 			// backgroundRepeat: "no-repeat"
