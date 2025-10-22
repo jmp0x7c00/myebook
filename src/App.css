@@ -22,6 +22,13 @@
 
   width: 100%;
   height: 100%;
+
+/* 防止封面翻页时因硬件加速导致抖动 */
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+  -webkit-transform: translateZ(0); /* 强制开启 GPU 合成层 */
+  -webkit-font-smoothing: antialiased;
 }
 
 .btn,
@@ -73,6 +80,8 @@ input {
   text-shadow: 2px 2px 0 #fff, 3px 3px 0 #ffccff;
   letter-spacing: 1px;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 
@@ -81,5 +90,3 @@ input {
   font-size: 3rem; /* 根据需要调整大小 */
   color: #333;      /* 字体颜色 */
 }
-
-
