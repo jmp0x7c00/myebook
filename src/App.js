@@ -6,25 +6,68 @@ import "./App.css";
 
 
 
-const PageCover = React.forwardRef((props, ref) => {
-	return (
-		<div
-		className="cover"
-		ref={ref}
-		data-density="hard"
-		style={{
-			// backgroundImage: "url('/179175e8b0f611660ec7f67422b3ce71.jpeg')",
-			// backgroundSize: "cover",
-			// backgroundPosition: "center",
-			// backgroundRepeat: "no-repeat"
-		}}
-		>
-		<div>
-		<h2>{props.children}</h2>
-		</div>
-		</div>
-	);
+// const PageCover = React.forwardRef((props, ref) => {
+// 	return (
+// 		<div
+// 		className="cover"
+// 		ref={ref}
+// 		data-density="hard"
+// 		style={{
+// 			// backgroundImage: "url('/179175e8b0f611660ec7f67422b3ce71.jpeg')",
+// 			// backgroundSize: "cover",
+// 			// backgroundPosition: "center",
+// 			// backgroundRepeat: "no-repeat"
+// 		}}
+// 		>
+// 		<div>
+// 		<h2>{props.children}</h2>
+// 		</div>
+// 		</div>
+// 	);
+// });
+
+const PageCover = React.forwardRef(({ title, image, text }, ref) => {
+  return (
+    <div
+      className="cover"
+      ref={ref}
+      data-density="hard"
+      style={{
+        // backgroundImage: `url(${bg})`,
+        // backgroundSize: "cover",
+        // backgroundPosition: "center",
+        // position: "relative",
+      }}
+    >
+      {image && (
+        <img
+          src={image}
+          alt="cover"
+          style={{
+            maxWidth: "100%",
+            maxHeight: "100%",
+            objectFit: "contain",
+            display: "block",
+            margin: "0 auto",
+          }}
+        />
+      )}
+      <h2 style={{ textAlign: "center" }}>{title}</h2>
+      {text && (
+        <p
+          style={{
+            whiteSpace: "pre-wrap",
+            textAlign: "center",
+            padding: "10px",
+          }}
+        >
+          {text}
+        </p>
+      )}
+    </div>
+  );
 });
+
 
 const Page = React.forwardRef(({ number, content, image }, ref) => {
 	return (
@@ -61,11 +104,18 @@ function MyAlbum() {
 	const [isModelLoading, setIsModelLoading] = useState(false);
 	const modelRef = useRef(null);  // 🔹 保存全局模型
 	
+	// const [pages, setPages] = useState([
+	// 	{ text: "第一页内容", image: null },
+	// 	{ text: "第二页内容", image: null },
+	// 	{ text: "第三页内容", image: null },
+	// 	{ text: "第四页内容", image: null },
+	// ]);
+
 	const [pages, setPages] = useState([
-		{ text: "第一页内容", image: null },
-		{ text: "第二页内容", image: null },
-		{ text: "第三页内容", image: null },
-		{ text: "第四页内容", image: null },
+	  { text: "封面内容", image: null, isCover: true },
+	  { text: "第一页内容", image: null },
+	  { text: "第二页内容", image: null },
+	  { text: "第三页内容", image: null },
 	]);
 
 	// 用于保存当前录音的上下文
@@ -128,8 +178,8 @@ function MyAlbum() {
 		        console.log(`Result: ${message.result.text}`);
 				const newPages = [...pages];
 				let textOld = '';
-				if (newPages[currentPage - 1] && newPages[currentPage - 1] .text){
-					textOld = newPages[currentPage - 1].text;
+				if (newPages[currentPage] && newPages[currentPage] .text){
+					textOld = newPages[currentPage].text;
 					if (!textOld || textOld === "" || textOld.includes('内容')){
 						textOld = '';
 					} 
@@ -147,7 +197,7 @@ function MyAlbum() {
 						return;
 					}
 					textNew = textOld + textNew;
-					newPages[currentPage - 1].text = textNew;
+					newPages[currentPage].text = textNew;
 					setPages(newPages);
 				}
 		    });
@@ -208,7 +258,7 @@ function MyAlbum() {
 		const reader = new FileReader();
 		reader.onload = (event) => {
 			const newPages = [...pages];
-			newPages[currentPage - 1].image = event.target.result;
+			newPages[currentPage].image = event.target.result;
 			setPages(newPages);
 		};
 		reader.readAsDataURL(file);
@@ -239,17 +289,25 @@ function MyAlbum() {
 		ref={bookRef}
 		onFlip={handleFlip}
 		>
-		<PageCover>I am special!</PageCover>
-		{pages.map((p, i) => (
-			<Page key={i} number={i + 1} content={p.text} image={p.image} />
-		))}
-		<PageCover></PageCover>
+
+		{pages.map((p, i) =>
+		    p.isCover ? (
+		      <PageCover
+		        key={i}
+		        title="I am special!"
+		        image={p.image}
+		        text={p.text}
+		      />
+		    ) : (
+		      <Page key={i} number={i} content={p.text} image={p.image} />
+		    )
+  		)}
 		</HTMLFlipBook>
 
 		<br />
 
 		{/* ✅ 左右语音输入区 + 文件上传区 + 删除按钮 */}
-		{currentPage > 0 && (
+		{currentPage >= 0 && (
 		<div className="formContainer" style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "20px", marginTop: "20px" }}>
 		    {/* 上传按钮 */}
 		    <button className="btn" style={{ backgroundColor: "#3498db", color: "white", border: "none", padding: "8px 16px", borderRadius: "6px", cursor: "pointer" }} onClick={() => document.getElementById("fileInputLeft").click()}>
@@ -279,7 +337,7 @@ function MyAlbum() {
 		        cursor: "pointer",
 		    }} onClick={() => {
 		        const newPages = [...pages];
-		        const pageIndex = currentPage - 1; // 注意 PageCover 占位
+		        const pageIndex = currentPage; // 注意 PageCover 占位
 		        if (newPages[pageIndex] && newPages[pageIndex].text) {
 		            let sentences = newPages[pageIndex].text.split(".").filter(s => s.trim() !== "");
 		            if (sentences.length > 0) {
