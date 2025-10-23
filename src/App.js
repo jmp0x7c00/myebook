@@ -175,14 +175,17 @@ function MyAlbum() {
 		    recognizer.on("result", (message) => {
 		        console.log(`Result: ${message.result.text}`);
 				const newPages = [...pages];
+				// 🔹 对当前页对象做一次浅拷贝，避免修改原对象引用
+				const current = { ...newPages[currentPage] }; 
+				
 				let textOld = '';
-				if (newPages[currentPage] && newPages[currentPage] .text){
-					textOld = newPages[currentPage].text;
+				if (current && current.text){
+					textOld = current.text;
 					if (!textOld || textOld === "" || textOld.includes('内容')){
 						textOld = '';
 					} 
 				}
-		
+				
 				let raw = message.result.text.trim();
 				if (raw.length > 0) {
 				  raw = raw.charAt(0).toUpperCase() + raw.slice(1);
@@ -195,9 +198,13 @@ function MyAlbum() {
 						return;
 					}
 					textNew = textOld + textNew;
-					newPages[currentPage].text = textNew;
+					current.text = textNew;
+				
+					// 🔹 更新数组中的当前页对象
+					newPages[currentPage] = current;
 					setPages(newPages);
 				}
+
 		    });
 		    recognizer.on("partialresult", (message) => {
 		        console.log(`Partial result: ${message.result.partial}`);
