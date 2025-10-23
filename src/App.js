@@ -248,40 +248,52 @@ function MyAlbum() {
 
 		<br />
 
-		{/* ✅ 左右语音输入区 + 文件上传区 */}
+		{/* ✅ 左右语音输入区 + 文件上传区 + 删除按钮 */}
 		{currentPage > 0 && (
-		<div className="formContainer" style={{ display: "flex" , justifyContent: "center" , alignItems: "center" ,
-			gap: "20px" , marginTop: "20px" , }}>
-			{/* 上传按钮（自定义美观） */}
-			<button className="btn" style={{ backgroundColor: "#3498db" , color: "white" , border: "none" ,
-				padding: "8px 16px" , borderRadius: "6px" , cursor: "pointer" , }} onClick={()=>
-				document.getElementById("fileInputLeft").click()}
-				>
-				上传图片
-			</button>
-
-			{/* 隐藏原生 input */}
-			<input id="fileInputLeft" type="file" accept="image/*" style={{ display: "none" }} onChange={(e)=>
-			uploadImage("left", e)}
-			/>
-
-			{/* 录音按钮 */}
-			<button className="btn" onClick={()=>
-				isListeningLeft ? stopRecording("left") : startSpeechRecognition("left")
-				}
-				style={{
-				backgroundColor: isListeningLeft ? "red" : "lightgreen",
-				color: "white",
-				border: "none",
-				padding: "8px 16px",
-				borderRadius: "6px",
-				cursor: "pointer",
-				}}
-				>
-				{isListeningLeft ? "停止录音" : "🎙️ 开始录音"}
-			</button>
+		<div className="formContainer" style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "20px", marginTop: "20px" }}>
+		    {/* 上传按钮 */}
+		    <button className="btn" style={{ backgroundColor: "#3498db", color: "white", border: "none", padding: "8px 16px", borderRadius: "6px", cursor: "pointer" }} onClick={() => document.getElementById("fileInputLeft").click()}>
+		        上传图片
+		    </button>
+		    <input id="fileInputLeft" type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => uploadImage("left", e)} />
+		
+		    {/* 录音按钮 */}
+		    <button className="btn" onClick={() => isListeningLeft ? stopRecording("left") : startSpeechRecognition("left")} style={{
+		        backgroundColor: isListeningLeft ? "red" : "lightgreen",
+		        color: "white",
+		        border: "none",
+		        padding: "8px 16px",
+		        borderRadius: "6px",
+		        cursor: "pointer",
+		    }}>
+		        {isListeningLeft ? "停止录音" : "🎙️ 开始录音"}
+		    </button>
+		
+		    {/* 🔹 删除按钮 */}
+		    <button className="btn" style={{
+		        backgroundColor: "#e74c3c",
+		        color: "white",
+		        border: "none",
+		        padding: "8px 16px",
+		        borderRadius: "6px",
+		        cursor: "pointer",
+		    }} onClick={() => {
+		        const newPages = [...pages];
+		        const pageIndex = currentPage - 1; // 注意 PageCover 占位
+		        if (newPages[pageIndex] && newPages[pageIndex].text) {
+		            let sentences = newPages[pageIndex].text.split(".").filter(s => s.trim() !== "");
+		            if (sentences.length > 0) {
+		                sentences.pop(); // 删除最后一句
+		                newPages[pageIndex].text = sentences.join(". ") + (sentences.length ? "." : "");
+		                setPages(newPages);
+		            }
+		        }
+		    }}>
+		        删除最后一句
+		    </button>
 		</div>
 		)}
+
 
 		{/* <p style={{ textAlign: "center" }}>当前页：第 {currentPage + 1} 页</p> */}
 		</div>
