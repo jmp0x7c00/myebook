@@ -47,13 +47,13 @@ const PageCover = React.forwardRef(({ title, image, text }, ref) => {
         <img
           src={image}
           alt="cover"
-          style={{
-            maxWidth: "100%",
-            maxHeight: "100%",
-            objectFit: "contain",
-            display: "block",
-            margin: "0 auto",
-          }}
+          // style={{
+          //   maxWidth: "100%",
+          //   maxHeight: "100%",
+          //   objectFit: "contain",
+          //   display: "block",
+          //   margin: "0 auto",
+          // }}
         />
       )}
       
