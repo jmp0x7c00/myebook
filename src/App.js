@@ -117,7 +117,7 @@ function MyAlbum() {
 		    if (!modelRef.current) {
 	            setIsModelLoading(true);
 	            modelRef.current = await Vosk.createModel(
-	                "https://ccoreilly.github.io/vosk-browser/models/vosk-model-small-en-us-0.15.tar.gz"
+	                "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
 	            );
 	            setIsModelLoading(false);
 	            console.log("✅ 模型加载完成");
