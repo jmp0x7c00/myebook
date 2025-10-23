@@ -110,7 +110,7 @@ function MyAlbum() {
 	// ]);
 
 	const [pages, setPages] = useState([
-	  { text: "封面内容", image: null, isCover: true },
+	  { text: "", image: null, isCover: true },
 	  { text: "第一页内容", image: null },
 	  { text: "第二页内容", image: null },
 	  { text: "第三页内容", image: null },
