@@ -58,13 +58,7 @@ const PageCover = React.forwardRef(({ title, image, text }, ref) => {
       )}
       
       {text && (
-        <p
-          style={{
-            whiteSpace: "pre-wrap",
-            textAlign: "center",
-            padding: "10px",
-          }}
-        >
+        <p className="cartoon-text" style={{ whiteSpace: "pre-wrap" }}>
           {text}
         </p>
       )}
