@@ -39,6 +39,10 @@ const PageCover = React.forwardRef(({ title, image, text }, ref) => {
         // position: "relative",
       }}
     >
+
+
+	<h2 style={{ textAlign: "center" }}>{title}</h2>
+								   
       {image && (
         <img
           src={image}
@@ -52,7 +56,7 @@ const PageCover = React.forwardRef(({ title, image, text }, ref) => {
           }}
         />
       )}
-      <h2 style={{ textAlign: "center" }}>{title}</h2>
+      
       {text && (
         <p
           style={{
