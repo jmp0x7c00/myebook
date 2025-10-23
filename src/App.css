@@ -30,7 +30,7 @@
   -webkit-transform: translateZ(0); /* 强制开启 GPU 合成层 */
   -webkit-font-smoothing: antialiased;
 
-  overflow: hidden, // ✅ 防止内容超出
+  overflow: hidden;
 }
 
 .cover img {
