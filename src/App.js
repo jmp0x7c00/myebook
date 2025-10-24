@@ -114,6 +114,7 @@ function MyAlbum() {
 	  { text: "第一页内容", image: null },
 	  { text: "第二页内容", image: null },
 	  { text: "第三页内容", image: null },
+	  { text: "第四页内容", image: null },
 	]);
 
 	// 用于保存当前录音的上下文
