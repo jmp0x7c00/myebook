@@ -611,7 +611,7 @@ function MyAlbum() {
 					}
 					const textStack = textStacksRef.current[currentPage];
 					textStacksRef.current[currentPage] = [];
-					textStacksRef.current[currentPage].push(raw);
+					textStacksRef.current[currentPage].push(defaultText);
 					const newPageText = textStacksRef.current[currentPage].join(" ")
 					current.text = newPageText
 					newPages[currentPage] = current;
@@ -644,7 +644,7 @@ function MyAlbum() {
 					}
 					const textStack = textStacksRef.current[currentPage];
 					textStacksRef.current[currentPage] = [];
-					textStacksRef.current[currentPage].push(raw);
+					textStacksRef.current[currentPage].push(defaultText);
 					const newPageText = textStacksRef.current[currentPage].join(" ")
 					current.text = newPageText
 					newPages[currentPage] = current;
