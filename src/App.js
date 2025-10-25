@@ -321,7 +321,7 @@ function MyAlbum() {
 								}
 								
 							}).catch(err => {
-								console.error("video2text 错误:", err);
+								alert("video2text 错误:", err);
 							});
 						};
 				
