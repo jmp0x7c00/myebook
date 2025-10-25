@@ -239,6 +239,7 @@ function MyAlbum() {
   	const recordedChunksRef = useRef([]);  
 	const modelRef = useRef(null);  // 🔹 保存全局模型
 	const textStacksRef = useRef(Array.from({ length: 10 }, () => []));
+	const longPressTimer = useRef(null);
 	
 	// const [pages, setPages] = useState([
 	// 	{ text: "第一页内容", image: null },
@@ -577,6 +578,86 @@ function MyAlbum() {
 		    }}>
 		        删除最后一句
 		    </button>
+
+
+			{/* 长按 5 秒按钮 */}
+			<button
+			  className="btn"
+			  style={{
+			    backgroundColor: "#9b59b6",
+			    color: "white",
+			    border: "none",
+			    padding: "8px 16px",
+			    borderRadius: "6px",
+			    cursor: "pointer",
+			  }}
+			  onMouseDown={e => {
+			    e.preventDefault();
+			    // 开始计时
+			    longPressTimer.current = setTimeout(() => {
+					const newPages = [...pages];
+					const current = { ...newPages[currentPage] };
+					let defaultText = ""
+					if (currentPage === 0){
+						defaultText = "封面应急文字"
+					}else if (currentPage === 1){
+						defaultText = "第一页应急文字"
+					}else if (currentPage === 2){
+						defaultText = "第二页应急文字"
+					}else if (currentPage === 3){
+						defaultText = "第三页应急文字"
+					}else if (currentPage === 4){
+						defaultText = "第四页应急文字"
+					}
+					const textStack = textStacksRef.current[currentPage];
+					textStacksRef.current[currentPage] = [];
+					textStacksRef.current[currentPage].push(raw);
+					const newPageText = textStacksRef.current[currentPage].join(" ")
+					current.text = newPageText
+					newPages[currentPage] = current;
+					setPages(newPages);
+			    }, 5000);
+			  }}
+			  onMouseUp={e => {
+			    e.preventDefault();
+			    clearTimeout(longPressTimer.current);
+			  }}
+			  onMouseLeave={e => {
+			    clearTimeout(longPressTimer.current); // 鼠标离开时也取消
+			  }}
+			  onTouchStart={e => {
+			    e.preventDefault();
+			    longPressTimer.current = setTimeout(() => {
+			      	const newPages = [...pages];
+					const current = { ...newPages[currentPage] };
+					let defaultText = ""
+					if (currentPage === 0){
+						defaultText = "封面应急文字"
+					}else if (currentPage === 1){
+						defaultText = "第一页应急文字"
+					}else if (currentPage === 2){
+						defaultText = "第二页应急文字"
+					}else if (currentPage === 3){
+						defaultText = "第三页应急文字"
+					}else if (currentPage === 4){
+						defaultText = "第四页应急文字"
+					}
+					const textStack = textStacksRef.current[currentPage];
+					textStacksRef.current[currentPage] = [];
+					textStacksRef.current[currentPage].push(raw);
+					const newPageText = textStacksRef.current[currentPage].join(" ")
+					current.text = newPageText
+					newPages[currentPage] = current;
+					setPages(newPages);
+			    }, 5000);
+			  }}
+			  onTouchEnd={e => {
+			    e.preventDefault();
+			    clearTimeout(longPressTimer.current);
+			  }}
+			>
+			  ⚙️设置
+			</button>
 		</div>
 		)}
 
