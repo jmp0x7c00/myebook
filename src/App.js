@@ -308,17 +308,10 @@ function MyAlbum() {
 									} 
 								}
 								
-								let raw = message.result.text.trim();
-								if (raw.length > 0) {
-								  raw = raw.charAt(0).toUpperCase() + raw.slice(1);
-								}
-								let textNew = `${raw}. `;
+								let raw = textRes.trim();
+								let textNew = `${raw} `;
 								
-								if (textNew !== '. '){
-									if (textOld.endsWith(textNew)){
-										console.log(`重复内容： ${textNew}, 过滤掉`);
-										return;
-									}
+								if (textNew !== ' '){
 									textNew = textOld + textNew;
 									current.text = textNew;
 								
@@ -425,7 +418,7 @@ function MyAlbum() {
 	
 	        processor.onaudioprocess = (event) => {
 	            const audioBuffer = event.inputBuffer; // ✅ 保留 AudioBuffer
-    			recognizer.acceptWaveform(audioBuffer); // Vosk 正确类型
+    			// recognizer.acceptWaveform(audioBuffer); // Vosk 正确类型
 
 			// ✅ 保存音频数据块
 			  const channelData = audioBuffer.getChannelData(0);
@@ -439,7 +432,7 @@ function MyAlbum() {
 			// ✅ 保存上下文
 	        audioCtxRef.current = audioContext;
 	        micStreamRef.current = mediaStream;
-	        recognizerRef.current = recognizer;
+	        // recognizerRef.current = recognizer;
 	
 	        // ✅ 更新按钮状态
 	        if (side === "left") setIsListeningLeft(true);
