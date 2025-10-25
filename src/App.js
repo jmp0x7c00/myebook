@@ -5,27 +5,6 @@ import bg from './bg.jpg';
 import "./App.css";
 
 
-
-// const PageCover = React.forwardRef((props, ref) => {
-// 	return (
-// 		<div
-// 		className="cover"
-// 		ref={ref}
-// 		data-density="hard"
-// 		style={{
-// 			// backgroundImage: "url('/179175e8b0f611660ec7f67422b3ce71.jpeg')",
-// 			// backgroundSize: "cover",
-// 			// backgroundPosition: "center",
-// 			// backgroundRepeat: "no-repeat"
-// 		}}
-// 		>
-// 		<div>
-// 		<h2>{props.children}</h2>
-// 		</div>
-// 		</div>
-// 	);
-// });
-
 const PageCover = React.forwardRef(({ title, image, text }, ref) => {
   return (
     <div
@@ -94,6 +73,57 @@ function floatTo16BitPCM(float32Array) {
     return buffer;
 }
 
+function mergeFloat32Arrays(chunks) {
+  const length = chunks.reduce((acc, val) => acc + val.length, 0);
+  const merged = new Float32Array(length);
+  let offset = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return merged;
+}
+
+
+
+// 🔹 新增：将 Float32Array 转为 WAV Blob
+function encodeWAV(samples, sampleRate = 16000) {
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+
+  function writeString(view, offset, string) {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  }
+
+  const write16 = (offset, value) => view.setUint16(offset, value, true);
+  const write32 = (offset, value) => view.setUint32(offset, value, true);
+
+  writeString(view, 0, 'RIFF');
+  write32(4, 36 + samples.length * 2);
+  writeString(view, 8, 'WAVE');
+  writeString(view, 12, 'fmt ');
+  write32(16, 16);
+  write16(20, 1);
+  write16(22, 1);
+  write32(24, sampleRate);
+  write32(28, sampleRate * 2);
+  write16(32, 2);
+  write16(34, 16);
+  writeString(view, 36, 'data');
+  write32(40, samples.length * 2);
+
+  let offset = 44;
+  for (let i = 0; i < samples.length; i++, offset += 2) {
+    const s = Math.max(-1, Math.min(1, samples[i]));
+    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+  }
+
+  return new Blob([view], { type: 'audio/wav' });
+}
+
+
 function MyAlbum() {
 	const bookRef = useRef();
 	const [currentPage, setCurrentPage] = useState(0);
@@ -144,6 +174,19 @@ function MyAlbum() {
 
 			if (side === "left") setIsListeningLeft(false);
 			else setIsListeningRight(false);
+
+			// ✅ 导出 WAV 文件
+			if (recordedChunksRef.current.length > 0) {
+			  const merged = mergeFloat32Arrays(recordedChunksRef.current);
+			  const wavBlob = encodeWAV(merged, 16000);
+			  const url = URL.createObjectURL(wavBlob);
+			  const a = document.createElement('a');
+			  a.href = url;
+			  a.download = `recording_${Date.now()}.wav`;
+			  a.click();
+			  URL.revokeObjectURL(url);
+			  recordedChunksRef.current = [];
+			}
 
 			console.log("🟥 录音已停止");
 		} catch (err) {
@@ -233,6 +276,10 @@ function MyAlbum() {
 	        processor.onaudioprocess = (event) => {
 	            const audioBuffer = event.inputBuffer; // ✅ 保留 AudioBuffer
     			recognizer.acceptWaveform(audioBuffer); // Vosk 正确类型
+
+			// ✅ 保存音频数据块
+			  const channelData = audioBuffer.getChannelData(0);
+			  recordedChunksRef.current.push(new Float32Array(channelData));
 	        };
 	
 	        source.connect(processor);
