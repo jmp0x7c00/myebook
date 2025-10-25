@@ -124,6 +124,110 @@ function encodeWAV(samples, sampleRate = 16000) {
 }
 
 
+// ********** 工具函数 **********
+const Utils = {
+  str2ab: str => new TextEncoder().encode(str),
+
+  ab2hex: buffer => Array.from(new Uint8Array(buffer))
+    .map(b => b.toString(16).padStart(2, '0')).join(''),
+
+  sha256: async (message) => {
+    const buffer = await crypto.subtle.digest("SHA-256", Utils.str2ab(message));
+    return Utils.ab2hex(buffer);
+  },
+
+  hmacSha256: (message, key) => CryptoJS.HmacSHA256(message, key),
+
+  hmacSha256Hex: async (message, key) => {
+    const sig = Utils.hmacSha256(message, key);
+    return sig.toString(CryptoJS.enc.Hex);
+  },
+
+  getDate: (timestamp) => {
+    const d = new Date(timestamp * 1000);
+    const yyyy = d.getUTCFullYear();
+    const mm = ("0" + (d.getUTCMonth() + 1)).slice(-2);
+    const dd = ("0" + d.getUTCDate()).slice(-2);
+    return `${yyyy}-${mm}-${dd}`;
+  }
+};
+
+// ********** video2text 函数 **********
+async function video2text(audio_base64) {
+  // 配置信息
+  const SECRET_ID = "AKIDplU4RaWFmIpESTHrDOOH1ay97rQoMzUp";
+  const SECRET_KEY = "ABziFdpnbFj183kDf1GI8lBPPGwRjofI";
+  const TOKEN = "";
+  const host = "asr.tencentcloudapi.com";
+  const service = "asr";
+  const region = "";
+  const action = "SentenceRecognition";
+  const version = "2019-06-14";
+
+  const payload = JSON.stringify({
+    EngSerViceType: "8k_en",
+    SourceType: 1,
+    VoiceFormat: "wav",
+    Data: audio_base64
+  });
+
+  const timestamp = Math.floor(Date.now() / 1000);
+  const date = Utils.getDate(timestamp);
+  const signedHeaders = "content-type;host;x-tc-action";
+  const hashedRequestPayload = await Utils.sha256(payload);
+
+  const canonicalRequest = [
+    "POST",
+    "/",
+    "",
+    "content-type:application/json; charset=utf-8\nhost:asr.tencentcloudapi.com\nx-tc-action:sentencerecognition\n",
+    signedHeaders,
+    hashedRequestPayload
+  ].join("\n");
+
+  const hashedCanonicalRequest = await Utils.sha256(canonicalRequest);
+  const credentialScope = `${date}/${service}/tc3_request`;
+  const stringToSign = [
+    "TC3-HMAC-SHA256",
+    timestamp,
+    credentialScope,
+    hashedCanonicalRequest
+  ].join("\n");
+
+  // 计算签名
+  const kDate = Utils.hmacSha256(date, "TC3" + SECRET_KEY);
+  const kService = Utils.hmacSha256(service, kDate);
+  const kSigning = Utils.hmacSha256("tc3_request", kService);
+  const signature = await Utils.hmacSha256Hex(stringToSign, kSigning);
+
+  const authorization = `TC3-HMAC-SHA256 Credential=${SECRET_ID}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+
+  const headers = {
+    Authorization: authorization,
+    "Content-Type": "application/json; charset=utf-8",
+    Host: host,
+    "X-TC-Action": action,
+    "X-TC-Timestamp": timestamp,
+    "X-TC-Version": version
+  };
+  if (region) headers["X-TC-Region"] = region;
+  if (TOKEN) headers["X-TC-Token"] = TOKEN;
+
+  // 发送请求
+  const res = await fetch(`https://proxy-myebook.chenyang5588.workers.dev/tencent-asr`, {
+    method: "POST",
+    headers,
+    body: payload
+  });
+
+  const data = await res.json();
+
+  // 提取 Response.Result
+  return data.Response?.Result || "";
+}
+
+
+
 function MyAlbum() {
 	const bookRef = useRef();
 	const [currentPage, setCurrentPage] = useState(0);
@@ -185,7 +289,8 @@ function MyAlbum() {
 				const reader = new FileReader();
 				reader.onloadend = () => {
 					const base64data = reader.result.split(",")[1]; // 去掉 data:audio/wav;base64,
-					console.log("🔹 WAV Base64:", base64data);
+					const textRes = await video2text(base64data);
+					alert(textRes);
 				};
 				reader.readAsDataURL(wavBlob);
 				
