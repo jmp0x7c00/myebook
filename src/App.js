@@ -224,6 +224,11 @@ async function video2text(audio_base64) {
 
   console.log("asr resp:", data);
 
+  if (data && data.Response && data.Response.Error && data.Response.Error){
+	  alert(`tencent asr error: ${data.Response.Error.Code}, ${data.Response.Error.Message}`);
+	  return "";
+  }
+
   // 提取 Response.Result
   return data.Response?.Result || "";
 }
