@@ -577,22 +577,14 @@ function MyAlbum() {
 		
 		    {/* 录音按钮 */}
 		    <button className="btn"
-					onMouseDown={e => {
-						e.preventDefault();  // 阻止系统长按菜单
-						startSpeechRecognition("left");
-					}}
-					onMouseUp={e => {
-						e.preventDefault();
-						stopRecording("left");
-					}}
-					onTouchStart={e => {
-						e.preventDefault(); // 禁止触摸长按菜单
-						startSpeechRecognition("left");
-					}}
-					onTouchEnd={e => {
-						e.preventDefault();
-						stopRecording("left");
-					}}
+					  onPointerDown={e => {
+					    e.preventDefault();
+					    startSpeechRecognition("left");
+					  }}
+					  onPointerUp={e => {
+					    e.preventDefault();
+					    stopRecording("left");
+					  }}
 					style={{
 						backgroundColor: isListeningLeft ? "red" : "lightgreen",
 						color: "white",
@@ -628,7 +620,7 @@ function MyAlbum() {
 		    </button>
 
 
-			{/* 长按 5 秒按钮 */}
+			{/* 长按 3 秒按钮 */}
 			<button
 			  className="btn"
 			  style={{
@@ -664,7 +656,7 @@ function MyAlbum() {
 					current.text = newPageText
 					newPages[currentPage] = current;
 					setPages(newPages);
-			    }, 5000);
+			    }, 3000);
 			  }}
 			  onMouseUp={e => {
 			    e.preventDefault();
@@ -697,7 +689,7 @@ function MyAlbum() {
 					current.text = newPageText
 					newPages[currentPage] = current;
 					setPages(newPages);
-			    }, 5000);
+			    }, 3000);
 			  }}
 			  onTouchEnd={e => {
 			    e.preventDefault();
