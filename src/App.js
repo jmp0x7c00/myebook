@@ -130,6 +130,8 @@ function MyAlbum() {
 	const [isListeningLeft, setIsListeningLeft] = useState(false);
 	const [isListeningRight, setIsListeningRight] = useState(false);
 	const [isModelLoading, setIsModelLoading] = useState(false);
+	  // ✅ 新增：录音数据缓存
+  	const recordedChunksRef = useRef([]);  
 	const modelRef = useRef(null);  // 🔹 保存全局模型
 	
 	// const [pages, setPages] = useState([
