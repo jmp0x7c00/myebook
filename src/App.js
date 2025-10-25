@@ -295,16 +295,46 @@ function MyAlbum() {
 						return;
 					}
 				    video2text(base64data).then(textRes => {
-				        alert(textRes);
-				    }).catch(err => {
-				        console.error("video2text 错误:", err);
-				    });
-				};
-				reader.readAsDataURL(wavBlob);
-
+				        // alert(textRes);
+						const newPages = [...pages];
+						// 🔹 对当前页对象做一次浅拷贝，避免修改原对象引用
+						const current = { ...newPages[currentPage] }; 
+						
+						let textOld = '';
+						if (current && current.text){
+							textOld = current.text;
+							if (!textOld || textOld === "" || textOld.includes('内容')){
+								textOld = '';
+							} 
+						}
+						
+						let raw = message.result.text.trim();
+						if (raw.length > 0) {
+						  raw = raw.charAt(0).toUpperCase() + raw.slice(1);
+						}
+						let textNew = `${raw}. `;
+						
+						if (textNew !== '. '){
+							if (textOld.endsWith(textNew)){
+								console.log(`重复内容： ${textNew}, 过滤掉`);
+								return;
+							}
+							textNew = textOld + textNew;
+							current.text = textNew;
+						
+							// 🔹 更新数组中的当前页对象
+							newPages[currentPage] = current;
+							setPages(newPages);
+								
+							}).catch(err => {
+								console.error("video2text 错误:", err);
+							});
+						};
 				
-				// 清空缓存
-				recordedChunksRef.current = [];
+					reader.readAsDataURL(wavBlob);	
+					
+					// 清空缓存
+					recordedChunksRef.current = [];
 			}
 
 			console.log("🟥 录音已停止");
@@ -318,61 +348,61 @@ function MyAlbum() {
 		try {
 
 			// 如果模型正在加载
-			if (isModelLoading) {
-				alert("模型加载中，请稍后...");
-				return;
-			}
+			// if (isModelLoading) {
+			// 	alert("模型加载中，请稍后...");
+			// 	return;
+			// }
 		
 		    if ((side === "left" && isListeningLeft) || (side === "right" && isListeningRight)) return;
 		
-		    if (!modelRef.current) {
-	            setIsModelLoading(true);
-	            modelRef.current = await Vosk.createModel(
-	                "https://myebook-1257475696.cos.ap-shanghai.myqcloud.com/vosk-model-small-en-us-0.15.zip"
-	            );
-	            setIsModelLoading(false);
-	            console.log("✅ 模型加载完成");
-        	}
-			const recognizer = new modelRef.current.KaldiRecognizer(48000);
-			recognizer.setWords(true);
-		    recognizer.on("result", (message) => {
-		        console.log(`Result: ${message.result.text}`);
-				const newPages = [...pages];
-				// 🔹 对当前页对象做一次浅拷贝，避免修改原对象引用
-				const current = { ...newPages[currentPage] }; 
+		    // if (!modelRef.current) {
+	        //     setIsModelLoading(true);
+	        //     modelRef.current = await Vosk.createModel(
+	        //         "https://myebook-1257475696.cos.ap-shanghai.myqcloud.com/vosk-model-small-en-us-0.15.zip"
+	        //     );
+	        //     setIsModelLoading(false);
+	        //     console.log("✅ 模型加载完成");
+        	// }
+			// const recognizer = new modelRef.current.KaldiRecognizer(48000);
+			// recognizer.setWords(true);
+		    // recognizer.on("result", (message) => {
+		    //     console.log(`Result: ${message.result.text}`);
+			// 	const newPages = [...pages];
+			// 	// 🔹 对当前页对象做一次浅拷贝，避免修改原对象引用
+			// 	const current = { ...newPages[currentPage] }; 
 				
-				let textOld = '';
-				if (current && current.text){
-					textOld = current.text;
-					if (!textOld || textOld === "" || textOld.includes('内容')){
-						textOld = '';
-					} 
-				}
+			// 	let textOld = '';
+			// 	if (current && current.text){
+			// 		textOld = current.text;
+			// 		if (!textOld || textOld === "" || textOld.includes('内容')){
+			// 			textOld = '';
+			// 		} 
+			// 	}
 				
-				let raw = message.result.text.trim();
-				if (raw.length > 0) {
-				  raw = raw.charAt(0).toUpperCase() + raw.slice(1);
-				}
-				let textNew = `${raw}. `;
+			// 	let raw = message.result.text.trim();
+			// 	if (raw.length > 0) {
+			// 	  raw = raw.charAt(0).toUpperCase() + raw.slice(1);
+			// 	}
+			// 	let textNew = `${raw}. `;
 				
-				if (textNew !== '. '){
-					if (textOld.endsWith(textNew)){
-						console.log(`重复内容： ${textNew}, 过滤掉`);
-						return;
-					}
-					textNew = textOld + textNew;
-					current.text = textNew;
+			// 	if (textNew !== '. '){
+			// 		if (textOld.endsWith(textNew)){
+			// 			console.log(`重复内容： ${textNew}, 过滤掉`);
+			// 			return;
+			// 		}
+			// 		textNew = textOld + textNew;
+			// 		current.text = textNew;
 				
-					// 🔹 更新数组中的当前页对象
-					newPages[currentPage] = current;
-					setPages(newPages);
-				}
+			// 		// 🔹 更新数组中的当前页对象
+			// 		newPages[currentPage] = current;
+			// 		setPages(newPages);
+			// 	}
 
-		    });
-		    recognizer.on("partialresult", (message) => {
-		        console.log(`Partial result: ${message.result.partial}`);
+		    // });
+		    // recognizer.on("partialresult", (message) => {
+		    //     console.log(`Partial result: ${message.result.partial}`);
 				
-		    });				
+		    // });				
 
 			 const mediaStream = await navigator.mediaDevices.getUserMedia({
 		        video: false,
