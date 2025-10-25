@@ -527,15 +527,21 @@ function MyAlbum() {
 		    <input id="fileInputLeft" type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => uploadImage("left", e)} />
 		
 		    {/* 录音按钮 */}
-		    <button className="btn" onClick={() => isListeningLeft ? stopRecording("left") : startSpeechRecognition("left")} style={{
-		        backgroundColor: isListeningLeft ? "red" : "lightgreen",
-		        color: "white",
-		        border: "none",
-		        padding: "8px 16px",
-		        borderRadius: "6px",
-		        cursor: "pointer",
-		    }}>
-		        {isListeningLeft ? "停止录音" : "🎙️ 开始录音"}
+		    <button className="btn"
+					onMouseDown={() => startSpeechRecognition("left")} // 按下开始录音
+					onMouseUp={() => stopRecording("left")}           // 松开停止录音
+					onTouchStart={() => startSpeechRecognition("left")} // 手机触摸开始
+					onTouchEnd={() => stopRecording("left")}           // 手机触摸结束
+					style={{
+						backgroundColor: isListeningLeft ? "red" : "lightgreen",
+						color: "white",
+						border: "none",
+						padding: "8px 16px",
+						borderRadius: "6px",
+						cursor: "pointer",
+					}}
+			>
+		        {isListeningLeft ? "松开识别" : "🎙️ 开始录音"}
 		    </button>
 		
 		    {/* 🔹 删除按钮 */}
