@@ -288,11 +288,15 @@ function MyAlbum() {
 				// 将 Blob 转为 Base64 并打印
 				const reader = new FileReader();
 				reader.onloadend = () => {
-					const base64data = reader.result.split(",")[1]; // 去掉 data:audio/wav;base64,
-					const textRes = await video2text(base64data);
-					alert(textRes);
+				    const base64data = reader.result.split(",")[1];
+				    video2text(base64data).then(textRes => {
+				        alert(textRes);
+				    }).catch(err => {
+				        console.error("video2text 错误:", err);
+				    });
 				};
 				reader.readAsDataURL(wavBlob);
+
 				
 				// 清空缓存
 				recordedChunksRef.current = [];
