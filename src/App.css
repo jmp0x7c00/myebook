@@ -104,3 +104,20 @@ input {
   font-size: 3rem; /* 根据需要调整大小 */
   color: #333;      /* 字体颜色 */
 }
+
+/* App.css 或对应 CSS 文件 */
+.loading-overlay {
+  position: fixed;       /* 固定在屏幕上 */
+  top: 0;
+  left: 0;
+  width: 100vw;          /* 全屏宽 */
+  height: 100vh;         /* 全屏高 */
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+  display: flex;         /* 用 flex 居中内容 */
+  justify-content: center;
+  align-items: center;
+  color: white;          /* 文字颜色 */
+  font-size: 1.5rem;     /* 文字大小 */
+  z-index: 9999;         /* 确保在最上层 */
+}
+
