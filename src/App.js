@@ -214,7 +214,7 @@ async function video2text(audio_base64) {
   if (TOKEN) headers["X-TC-Token"] = TOKEN;
 
   // 发送请求
-  const res = await fetch(`https://proxy-myebook.chenyang5588.workers.dev/tencent-asr`, {
+  const res = await fetch(`http://myebook.asia/tencent-asr`, {
     method: "POST",
     headers,
     body: payload
