@@ -1,6 +1,6 @@
 /* global Vosk, CryptoJS */
 import HTMLFlipBook from "react-pageflip";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect} from "react";
 import bg from './bg.jpg';
 import "./App.css";
 
