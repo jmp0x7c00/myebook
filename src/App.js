@@ -222,6 +222,8 @@ async function video2text(audio_base64) {
 
   const data = await res.json();
 
+  console.log("asr resp:", data);
+
   // 提取 Response.Result
   return data.Response?.Result || "";
 }
