@@ -234,6 +234,7 @@ function MyAlbum() {
 	const [isListeningLeft, setIsListeningLeft] = useState(false);
 	const [isListeningRight, setIsListeningRight] = useState(false);
 	const [isModelLoading, setIsModelLoading] = useState(false);
+	const [loading, setLoading] = useState(false); // ✅ 控制 loading
 	  // ✅ 新增：录音数据缓存
   	const recordedChunksRef = useRef([]);  
 	const modelRef = useRef(null);  // 🔹 保存全局模型
@@ -283,6 +284,7 @@ function MyAlbum() {
 
 			// ✅ 导出 WAV 文件
 			if (recordedChunksRef.current.length > 0) {
+				setLoading(true);
 				const merged = mergeFloat32Arrays(recordedChunksRef.current);
 				const wavBlob = encodeWAV(merged, 48000);
 				// 将 Blob 转为 Base64 并打印
@@ -291,11 +293,14 @@ function MyAlbum() {
 				    const base64data = reader.result.split(",")[1];
 					const maxSize = 3 * 1024 * 1024; // 3MB
 					if (base64data.length > maxSize) {
+						setLoading(false); // ✅ 关闭 loading
 						alert("录制时间太长啦，请短一点");
 						return;
 					}
 				    video2text(base64data).then(textRes => {
 						        // alert(textRes);
+								// ✅ 关闭 loading 框
+            					setLoading(false);
 								const newPages = [...pages];
 								// 🔹 对当前页对象做一次浅拷贝，避免修改原对象引用
 								const current = { ...newPages[currentPage] }; 
@@ -321,6 +326,8 @@ function MyAlbum() {
 								}
 								
 							}).catch(err => {
+								// ✅ 关闭 loading 框
+            					setLoading(false);
 								alert("video2text 错误:", err);
 							});
 						};
@@ -501,6 +508,12 @@ function MyAlbum() {
 		</HTMLFlipBook>
 
 		<br />
+
+		{loading && (
+	        <div className="loading-overlay">
+	          正在识别文字...
+	        </div>
+     	)}
 
 		{/* ✅ 左右语音输入区 + 文件上传区 + 删除按钮 */}
 		{currentPage >= 0 && (
