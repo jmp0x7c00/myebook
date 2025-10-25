@@ -553,7 +553,7 @@ function MyAlbum() {
 						cursor: "pointer",
 					}}
 			>
-		        {isListeningLeft ? "松开识别" : "🎙️ 开始录音"}
+		        {isListeningLeft ? "停止录音" : "🎙️ 开始录音"}
 		    </button>
 		
 		    {/* 🔹 删除按钮 */}
