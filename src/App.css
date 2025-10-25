@@ -59,6 +59,10 @@
   align-items: center;
   --padding-x: 1.2em;
   border-color: transparent;
+  user-select: none;          /* 禁止文本选择 */
+  -webkit-user-select: none;  /* Safari */
+  -ms-user-select: none;      /* IE */
+  -webkit-touch-callout: none; /* iOS 阻止长按弹出菜单 */
 }
 .form-control {
   --padding-x: 0.5em;
