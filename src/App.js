@@ -295,36 +295,37 @@ function MyAlbum() {
 						return;
 					}
 				    video2text(base64data).then(textRes => {
-				        // alert(textRes);
-						const newPages = [...pages];
-						// 🔹 对当前页对象做一次浅拷贝，避免修改原对象引用
-						const current = { ...newPages[currentPage] }; 
-						
-						let textOld = '';
-						if (current && current.text){
-							textOld = current.text;
-							if (!textOld || textOld === "" || textOld.includes('内容')){
-								textOld = '';
-							} 
-						}
-						
-						let raw = message.result.text.trim();
-						if (raw.length > 0) {
-						  raw = raw.charAt(0).toUpperCase() + raw.slice(1);
-						}
-						let textNew = `${raw}. `;
-						
-						if (textNew !== '. '){
-							if (textOld.endsWith(textNew)){
-								console.log(`重复内容： ${textNew}, 过滤掉`);
-								return;
-							}
-							textNew = textOld + textNew;
-							current.text = textNew;
-						
-							// 🔹 更新数组中的当前页对象
-							newPages[currentPage] = current;
-							setPages(newPages);
+						        // alert(textRes);
+								const newPages = [...pages];
+								// 🔹 对当前页对象做一次浅拷贝，避免修改原对象引用
+								const current = { ...newPages[currentPage] }; 
+								
+								let textOld = '';
+								if (current && current.text){
+									textOld = current.text;
+									if (!textOld || textOld === "" || textOld.includes('内容')){
+										textOld = '';
+									} 
+								}
+								
+								let raw = message.result.text.trim();
+								if (raw.length > 0) {
+								  raw = raw.charAt(0).toUpperCase() + raw.slice(1);
+								}
+								let textNew = `${raw}. `;
+								
+								if (textNew !== '. '){
+									if (textOld.endsWith(textNew)){
+										console.log(`重复内容： ${textNew}, 过滤掉`);
+										return;
+									}
+									textNew = textOld + textNew;
+									current.text = textNew;
+								
+									// 🔹 更新数组中的当前页对象
+									newPages[currentPage] = current;
+									setPages(newPages);
+								}
 								
 							}).catch(err => {
 								console.error("video2text 错误:", err);
