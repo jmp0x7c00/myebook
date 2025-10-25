@@ -528,10 +528,22 @@ function MyAlbum() {
 		
 		    {/* 录音按钮 */}
 		    <button className="btn"
-					onMouseDown={() => startSpeechRecognition("left")} // 按下开始录音
-					onMouseUp={() => stopRecording("left")}           // 松开停止录音
-					onTouchStart={() => startSpeechRecognition("left")} // 手机触摸开始
-					onTouchEnd={() => stopRecording("left")}           // 手机触摸结束
+					onMouseDown={e => {
+						e.preventDefault();  // 阻止系统长按菜单
+						startSpeechRecognition("left");
+					}}
+					onMouseUp={e => {
+						e.preventDefault();
+						stopRecording("left");
+					}}
+					onTouchStart={e => {
+						e.preventDefault(); // 禁止触摸长按菜单
+						startSpeechRecognition("left");
+					}}
+					onTouchEnd={e => {
+						e.preventDefault();
+						stopRecording("left");
+					}}
 					style={{
 						backgroundColor: isListeningLeft ? "red" : "lightgreen",
 						color: "white",
