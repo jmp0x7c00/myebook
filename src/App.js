@@ -64,6 +64,38 @@ const Page = React.forwardRef(({ number, content, image }, ref) => {
 });
 
 
+let cachedSecretId = null;
+let cachedSecretKey = null;
+
+function decryptAES(cipherText, password) {
+  const bytes = CryptoJS.AES.decrypt(cipherText, password);
+  const plain = bytes.toString(CryptoJS.enc.Utf8);
+  if (!plain) {alert("解密失败（可能密码错或格式不匹配）");throw new Error("解密失败（可能密码错或格式不匹配）");}
+  return plain;
+}
+
+function initSecrets(encryptedId, encryptedKey, password) {
+  if (!cachedSecretId || !cachedSecretKey) {
+    cachedSecretId = decryptAES(encryptedId, password);
+    cachedSecretKey = decryptAES(encryptedKey, password);
+    console.log("✅ Secrets 已解密并缓存");
+  }
+}
+
+// 🔹 获取解密后的 SECRET_ID
+function getSecretId() {
+  if (!cachedSecretId) {alert("Secrets 未初始化");throw new Error("Secrets 未初始化");}
+  
+  return cachedSecretId;
+}
+
+// 🔹 获取解密后的 SECRET_KEY
+function getSecretKey() {
+  if (!cachedSecretKey) {alert("Secrets 未初始化");throw new Error("Secrets 未初始化");}
+  return cachedSecretKey;
+}
+
+
 function floatTo16BitPCM(float32Array) {
     const buffer = new Int16Array(float32Array.length);
     for (let i = 0; i < float32Array.length; i++) {
@@ -155,8 +187,8 @@ const Utils = {
 // ********** video2text 函数 **********
 async function video2text(audio_base64) {
   // 配置信息
-  const SECRET_ID = "AKIDplU4RaWFmIpESTHrDOOH1ay97rQoMzUp";
-  const SECRET_KEY = "ABziFdpnbFj183kDf1GI8lBPPGwRjofI";
+  const SECRET_ID = getSecretId();
+  const SECRET_KEY = getSecretKey();
   const TOKEN = "";
   const host = "asr.tencentcloudapi.com";
   const service = "asr";
@@ -247,6 +279,15 @@ function MyAlbum() {
 	const modelRef = useRef(null);  // 🔹 保存全局模型
 	const textStacksRef = useRef(Array.from({ length: 10 }, () => []));
 	const longPressTimer = useRef(null);
+
+	useEffect(() => {
+    initSecrets(
+      "U2FsdGVkX19b9y9J+KwpDxLZL29l3JcDowgdxtXCn6vIZ5i+oZT77bf6TnDlada2ssgBjL/Y3rTzJmpjx00diw==",
+      "U2FsdGVkX1/ukIu7coRRE9TQ/6ci0nfbmxThBG7HjVNXGwHuvqVVOIPNgbWLHJ8h+MGoaDHlyb0SMxud4rH5pg==",
+      "myebook@2025"
+    );
+		
+  }, []);
 	
 	// const [pages, setPages] = useState([
 	// 	{ text: "第一页内容", image: null },
