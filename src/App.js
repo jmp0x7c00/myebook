@@ -180,7 +180,7 @@ function MyAlbum() {
 			// ✅ 导出 WAV 文件
 			if (recordedChunksRef.current.length > 0) {
 			  const merged = mergeFloat32Arrays(recordedChunksRef.current);
-			  const wavBlob = encodeWAV(merged, 16000);
+			  const wavBlob = encodeWAV(merged, 48000);
 			  const url = URL.createObjectURL(wavBlob);
 			  const a = document.createElement('a');
 			  a.href = url;
