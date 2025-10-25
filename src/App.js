@@ -238,6 +238,7 @@ function MyAlbum() {
 	  // ✅ 新增：录音数据缓存
   	const recordedChunksRef = useRef([]);  
 	const modelRef = useRef(null);  // 🔹 保存全局模型
+	const textStacksRef = useRef(Array.from({ length: 10 }, () => []));
 	
 	// const [pages, setPages] = useState([
 	// 	{ text: "第一页内容", image: null },
@@ -314,12 +315,13 @@ function MyAlbum() {
 								}
 								
 								let raw = textRes.trim();
-								let textNew = `${raw} `;
 								
-								if (textNew !== ' '){
-									textNew = textOld + textNew;
-									current.text = textNew;
 								
+								if (raw !== ''){
+									textStacksRef.current[currentPage].push(raw);
+									const newPageText = textStacksRef.current[currentPage].join(" ")
+									
+									current.text = newPageText;
 									// 🔹 更新数组中的当前页对象
 									newPages[currentPage] = current;
 									setPages(newPages);
@@ -546,15 +548,14 @@ function MyAlbum() {
 		        cursor: "pointer",
 		    }} onClick={() => {
 		        const newPages = [...pages];
-		        const pageIndex = currentPage; // 注意 PageCover 占位
-		        if (newPages[pageIndex] && newPages[pageIndex].text) {
-		            let sentences = newPages[pageIndex].text.split(".").filter(s => s.trim() !== "");
-		            if (sentences.length > 0) {
-		                sentences.pop(); // 删除最后一句
-		                newPages[pageIndex].text = sentences.join(". ") + (sentences.length ? "." : "");
-		                setPages(newPages);
-		            }
-		        }
+		        const textStack = textStacksRef.current[currentPage];
+  				if (!textStack || textStack.length === 0) return;
+				textStack.pop();
+				const newText = textStack.join(" ")
+				const current = { ...newPages[currentPage] };
+				current.text = newText;
+				newPages[currentPage] = current;
+				setPages(newPages);
 		    }}>
 		        删除最后一句
 		    </button>
