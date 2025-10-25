@@ -289,6 +289,11 @@ function MyAlbum() {
 				const reader = new FileReader();
 				reader.onloadend = () => {
 				    const base64data = reader.result.split(",")[1];
+					const maxSize = 3 * 1024 * 1024; // 3MB
+					if (base64data.length > maxSize) {
+						alert("录制时间太长啦，请短一点");
+						return;
+					}
 				    video2text(base64data).then(textRes => {
 				        alert(textRes);
 				    }).catch(err => {
