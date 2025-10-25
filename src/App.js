@@ -179,15 +179,18 @@ function MyAlbum() {
 
 			// ✅ 导出 WAV 文件
 			if (recordedChunksRef.current.length > 0) {
-			  const merged = mergeFloat32Arrays(recordedChunksRef.current);
-			  const wavBlob = encodeWAV(merged, 48000);
-			  const url = URL.createObjectURL(wavBlob);
-			  const a = document.createElement('a');
-			  a.href = url;
-			  a.download = `recording_${Date.now()}.wav`;
-			  a.click();
-			  URL.revokeObjectURL(url);
-			  recordedChunksRef.current = [];
+				const merged = mergeFloat32Arrays(recordedChunksRef.current);
+				const wavBlob = encodeWAV(merged, 48000);
+				// 将 Blob 转为 Base64 并打印
+				const reader = new FileReader();
+				reader.onloadend = () => {
+					const base64data = reader.result.split(",")[1]; // 去掉 data:audio/wav;base64,
+					console.log("🔹 WAV Base64:", base64data);
+				};
+				reader.readAsDataURL(wavBlob);
+				
+				// 清空缓存
+				recordedChunksRef.current = [];
 			}
 
 			console.log("🟥 录音已停止");
