@@ -49,7 +49,7 @@ const PageCover = React.forwardRef(({ title, image, text }, ref) => {
 const Page = React.forwardRef(({ number, content, image }, ref) => {
 	return (
 		<div className="page" ref={ref}>
-		<h2>第 {number} 页</h2>
+		<h2>Page {number} </h2>
 		<hr />
 		{image && (
 			<img
@@ -301,7 +301,6 @@ function MyAlbum() {
 	  { text: "第一页内容", image: null },
 	  { text: "第二页内容", image: null },
 	  { text: "第三页内容", image: null },
-	  { text: "第四页内容", image: null },
 	]);
 
 	// 用于保存当前录音的上下文
