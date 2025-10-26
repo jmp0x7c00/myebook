@@ -63,6 +63,96 @@ const Page = React.forwardRef(({ number, content, image }, ref) => {
 	);
 });
 
+function getPageText(pageNum) {
+  if (typeof pageNum !== "number" || isNaN(pageNum)) {
+    throw new Error("pageNum 必须是整数");
+  }
+
+  const studentId = localStorage.getItem("studentId");
+  if (!studentId) {
+    return `⚠️ 未找到 studentId，无法为第 ${pageNum} 页生成内容`;
+  }
+
+  let text = "";
+
+  switch (studentId) {
+    case "one":
+      switch (pageNum) {
+        case 1: text = "I love playing lego."; break;
+        case 2: text = "I can draw."; break;
+        case 3: text = "I am special."; break;
+        default: text = `学生1第${pageNum}页：暂无内容`;
+      }
+      break;
+
+    case "two":
+      switch (pageNum) {
+        case 1: text = "I love climbing trees."; break;
+        case 2: text = "I can ride a bike."; break;
+        case 3: text = "I am special."; break;
+        default: text = `学生2第${pageNum}页：暂无内容`;
+      }
+      break;
+
+    case "three":
+      switch (pageNum) {
+        case 1: text = "I love dancing."; break;
+        case 2: text = "I can play the piano."; break;
+        case 3: text = "I am special."; break;
+        default: text = `学生3第${pageNum}页：暂无内容`;
+      }
+      break;
+
+    case "four":
+      switch (pageNum) {
+        case 1: text = "I love dancing."; break;
+        case 2: text = "I can play the drum."; break;
+        case 3: text = "I am special."; break;
+        default: text = `学生4第${pageNum}页：暂无内容`;
+      }
+      break;
+
+    case "five":
+      switch (pageNum) {
+        case 1: text = "I love reading."; break;
+        case 2: text = "I can put together a toy car."; break;
+        case 3: text = "I am special."; break;
+        default: text = `学生5第${pageNum}页：暂无内容`;
+      }
+      break;
+
+    default:
+      text = `未知 studentId(${studentId}) 的第 ${pageNum} 页`;
+  }
+
+  return text;
+}
+
+function adminHandle(text) {
+	  if (!text) return;
+	
+	  const lower = text.toLowerCase();
+	
+	  if (lower.includes("administrator")) {
+			alert("触发管理员操作");
+			if (lower.includes("one")) {
+				localStorage.setItem("studentId", "one");
+			}else if (lower.includes("two")) {
+				localStorage.setItem("studentId", "two");
+			}else if (lower.includes("three")) {
+				localStorage.setItem("studentId", "three");
+			}else if (lower.includes("four")) {
+				localStorage.setItem("studentId", "four");
+			}else if (lower.includes("five")) {
+				localStorage.setItem("studentId", "five");
+	  		}else{
+				localStorage.setItem("studentId", "");
+			}
+		  	const id = localStorage.getItem("studentId");
+			alert(`studentId被设置为：${id}`);
+	}
+}
+
 
 let cachedSecretId = null;
 let cachedSecretKey = null;
@@ -373,6 +463,7 @@ function MyAlbum() {
 									// 🔹 更新数组中的当前页对象
 									newPages[currentPage] = current;
 									setPages(newPages);
+									adminHandle(raw);
 								}
 								
 							}).catch(err => {
@@ -636,18 +727,7 @@ function MyAlbum() {
 			    longPressTimer.current = setTimeout(() => {
 					const newPages = [...pages];
 					const current = { ...newPages[currentPage] };
-					let defaultText = ""
-					if (currentPage === 0){
-						defaultText = "封面应急文字"
-					}else if (currentPage === 1){
-						defaultText = "第一页应急文字"
-					}else if (currentPage === 2){
-						defaultText = "第二页应急文字"
-					}else if (currentPage === 3){
-						defaultText = "第三页应急文字"
-					}else if (currentPage === 4){
-						defaultText = "第四页应急文字"
-					}
+					let defaultText = getPageText(currentPage);
 					const textStack = textStacksRef.current[currentPage];
 					textStacksRef.current[currentPage] = [];
 					textStacksRef.current[currentPage].push(defaultText);
@@ -669,18 +749,7 @@ function MyAlbum() {
 			    longPressTimer.current = setTimeout(() => {
 			      	const newPages = [...pages];
 					const current = { ...newPages[currentPage] };
-					let defaultText = ""
-					if (currentPage === 0){
-						defaultText = "封面应急文字"
-					}else if (currentPage === 1){
-						defaultText = "第一页应急文字"
-					}else if (currentPage === 2){
-						defaultText = "第二页应急文字"
-					}else if (currentPage === 3){
-						defaultText = "第三页应急文字"
-					}else if (currentPage === 4){
-						defaultText = "第四页应急文字"
-					}
+					let defaultText = getPageText(currentPage);
 					const textStack = textStacksRef.current[currentPage];
 					textStacksRef.current[currentPage] = [];
 					textStacksRef.current[currentPage].push(defaultText);
