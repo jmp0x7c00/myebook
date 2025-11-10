@@ -80,7 +80,7 @@ function getPageText(pageNum) {
       switch (pageNum) {
         case 1: text = "I love playing lego."; break;
         case 2: text = "I can draw."; break;
-        case 3: text = "I am special."; break;
+        case 3: text = "I'm the only one!"; break;
         default: text = `学生1第${pageNum}页：暂无内容`;
       }
       break;
@@ -89,7 +89,7 @@ function getPageText(pageNum) {
       switch (pageNum) {
         case 1: text = "I love climbing trees."; break;
         case 2: text = "I can ride a bike."; break;
-        case 3: text = "I am special."; break;
+        case 3: text = "I'm the only one!"; break;
         default: text = `学生2第${pageNum}页：暂无内容`;
       }
       break;
@@ -98,7 +98,7 @@ function getPageText(pageNum) {
       switch (pageNum) {
         case 1: text = "I love dancing."; break;
         case 2: text = "I can play the piano."; break;
-        case 3: text = "I am special."; break;
+        case 3: text = "I'm the only one!"; break;
         default: text = `学生3第${pageNum}页：暂无内容`;
       }
       break;
@@ -107,7 +107,7 @@ function getPageText(pageNum) {
       switch (pageNum) {
         case 1: text = "I love dancing."; break;
         case 2: text = "I can play the drum."; break;
-        case 3: text = "I am special."; break;
+        case 3: text = "I'm the only one!"; break;
         default: text = `学生4第${pageNum}页：暂无内容`;
       }
       break;
@@ -116,7 +116,7 @@ function getPageText(pageNum) {
       switch (pageNum) {
         case 1: text = "I love reading."; break;
         case 2: text = "I can put together a toy car."; break;
-        case 3: text = "I am special."; break;
+        case 3: text = "I'm the only one!"; break;
         default: text = `学生5第${pageNum}页：暂无内容`;
       }
       break;
@@ -391,6 +391,8 @@ function MyAlbum() {
 	  { text: "第一页内容", image: null },
 	  { text: "第二页内容", image: null },
 	  { text: "第三页内容", image: null },
+	  { text: "第四页内容", image: null },
+	  { text: "第五页内容", image: null },
 	]);
 
 	// 用于保存当前录音的上下文
@@ -638,7 +640,7 @@ function MyAlbum() {
 		    p.isCover ? (
 		      <PageCover
 		        key={i}
-		        title="I am special!"
+		        title="I'm the only one!"
 		        image={p.image}
 		        text={p.text}
 		      />
